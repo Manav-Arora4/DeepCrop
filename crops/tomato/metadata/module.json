@@ -1,0 +1,27 @@
+{
+  "id": "tomato",
+  "name": "Tomato",
+  "version": "1.0.0",
+  "description": "Tomato (Solanum lycopersicum) crop module with EfficientNetB0 disease classification and multimodal risk prediction.",
+  "status": "installed",
+  "growth_stages": ["seedling", "vegetative", "flowering", "fruit_development", "maturity"],
+  "cv_model": {
+    "path": "crops/tomato/models/cv/efficientnet_tomato_v1.pth",
+    "architecture": "efficientnet_b0",
+    "version": "0.1.0",
+    "status": "unavailable",
+    "num_classes": 10
+  },
+  "disease_risk_model": {
+    "path": "crops/tomato/models/disease_risk/rf_tomato_v1.pkl",
+    "architecture": "random_forest",
+    "version": "0.1.0",
+    "status": "unavailable"
+  },
+  "knowledge_path": "crops/tomato/knowledge",
+  "config": {
+    "thresholds_path": "crops/tomato/config/thresholds.json",
+    "disease_classes_path": "crops/tomato/config/disease_classes.json",
+    "crop_config_path": "crops/tomato/config/crop.json"
+  }
+}

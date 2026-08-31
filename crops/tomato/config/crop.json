@@ -1,0 +1,17 @@
+{
+  "id": "tomato",
+  "name": "Tomato",
+  "scientific_name": "Solanum lycopersicum",
+  "family": "Solanaceae",
+  "version": "1.0.0",
+  "description": "Tomato (Solanum lycopersicum) crop module for disease detection and health monitoring.",
+  "growth_stages": [
+    {"id": "seedling", "name": "Seedling", "typical_days": "0-14"},
+    {"id": "vegetative", "name": "Vegetative", "typical_days": "14-35"},
+    {"id": "flowering", "name": "Flowering", "typical_days": "35-60"},
+    {"id": "fruit_development", "name": "Fruit Development", "typical_days": "60-90"},
+    {"id": "maturity", "name": "Maturity", "typical_days": "90-120"}
+  ],
+  "typical_yield_kg_per_plant": {"min": 4.0, "max": 7.0},
+  "origin": "South America"
+}

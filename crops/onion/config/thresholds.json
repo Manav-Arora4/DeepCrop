@@ -1,0 +1,37 @@
+{
+  "crop": "onion",
+  "version": "0.1.0",
+  "sources": ["FAO Crop Water Requirements - Onion"],
+  "moisture": {
+    "low_max": 25.0,
+    "optimal_min": 25.0,
+    "optimal_max": 65.0,
+    "high_min": 65.0,
+    "unit": "%",
+    "notes": "Shallow root system; sensitive to drought during bulb formation."
+  },
+  "ph": {
+    "low_max": 6.0,
+    "optimal_min": 6.0,
+    "optimal_max": 7.0,
+    "high_min": 7.0,
+    "unit": "pH",
+    "notes": "Prefers well-drained fertile loam with neutral pH."
+  },
+  "temperature": {
+    "low_max": 12.0,
+    "optimal_min": 13.0,
+    "optimal_max": 25.0,
+    "high_min": 28.0,
+    "unit": "°C",
+    "notes": "Cool season initiation, warmer temperatures for bulb maturation."
+  },
+  "humidity": {
+    "low_max": 35.0,
+    "optimal_min": 35.0,
+    "optimal_max": 65.0,
+    "high_min": 65.0,
+    "unit": "%",
+    "notes": "High humidity induces purple blotch and downy mildew."
+  }
+}

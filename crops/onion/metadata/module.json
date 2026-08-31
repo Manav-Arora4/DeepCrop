@@ -1,0 +1,27 @@
+{
+  "id": "onion",
+  "name": "Onion",
+  "version": "0.1.0",
+  "description": "Onion (Allium cepa) crop module — stub showing modular multi-crop extensibility.",
+  "status": "not_installed",
+  "growth_stages": ["germination", "seedling", "bulb_initiation", "bulb_development", "maturity"],
+  "cv_model": {
+    "path": "crops/onion/models/cv/efficientnet_onion_v1.pth",
+    "architecture": "efficientnet_b0",
+    "version": "0.1.0",
+    "status": "not_installed",
+    "num_classes": 0
+  },
+  "disease_risk_model": {
+    "path": "crops/onion/models/disease_risk/rf_onion_v1.pkl",
+    "architecture": "random_forest",
+    "version": "0.1.0",
+    "status": "not_installed"
+  },
+  "knowledge_path": "crops/onion/knowledge",
+  "config": {
+    "thresholds_path": "crops/onion/config/thresholds.json",
+    "disease_classes_path": "crops/onion/config/disease_classes.json",
+    "crop_config_path": "crops/onion/config/crop.json"
+  }
+}

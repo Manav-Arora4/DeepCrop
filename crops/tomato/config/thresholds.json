@@ -1,0 +1,37 @@
+{
+  "crop": "tomato",
+  "version": "1.0.0",
+  "sources": ["FAO Crop Production Guidelines", "Cornell Cooperative Extension Tomato Production"],
+  "moisture": {
+    "low_max": 30.0,
+    "optimal_min": 30.0,
+    "optimal_max": 70.0,
+    "high_min": 70.0,
+    "unit": "%",
+    "notes": "Volumetric water content. Below 30%: drought stress. Above 70%: waterlogging risk."
+  },
+  "ph": {
+    "low_max": 5.5,
+    "optimal_min": 5.5,
+    "optimal_max": 7.0,
+    "high_min": 7.0,
+    "unit": "pH",
+    "notes": "Slightly acidic to neutral. Below 5.5: nutrient lockout. Above 7.0: micronutrient deficiency."
+  },
+  "temperature": {
+    "low_max": 10.0,
+    "optimal_min": 10.0,
+    "optimal_max": 30.0,
+    "high_min": 30.0,
+    "unit": "°C",
+    "notes": "Air temperature. Below 10°C: chilling injury risk. Above 30°C: blossom drop."
+  },
+  "humidity": {
+    "low_max": 40.0,
+    "optimal_min": 40.0,
+    "optimal_max": 70.0,
+    "high_min": 70.0,
+    "unit": "%",
+    "notes": "Relative humidity. Above 70%: fungal disease risk (early blight, late blight, leaf mold)."
+  }
+}

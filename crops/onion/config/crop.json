@@ -1,0 +1,15 @@
+{
+  "id": "onion",
+  "name": "Onion",
+  "scientific_name": "Allium cepa",
+  "family": "Amaryllidaceae",
+  "version": "0.1.0",
+  "description": "Onion module (stub).",
+  "growth_stages": [
+    {"id": "germination", "name": "Germination", "typical_days": "0-10"},
+    {"id": "seedling", "name": "Seedling", "typical_days": "10-30"},
+    {"id": "bulb_initiation", "name": "Bulb Initiation", "typical_days": "30-60"},
+    {"id": "bulb_development", "name": "Bulb Development", "typical_days": "60-100"},
+    {"id": "maturity", "name": "Maturity", "typical_days": "100-130"}
+  ]
+}

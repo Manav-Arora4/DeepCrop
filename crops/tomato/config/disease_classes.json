@@ -1,0 +1,117 @@
+{
+  "crop": "tomato",
+  "model_num_classes": 10,
+  "dataset": "PlantVillage (mohanty/PlantVillage on HuggingFace)",
+  "classes": [
+    {
+      "id": "tomato_bacterial_spot",
+      "index": 0,
+      "hf_label": "Tomato___Bacterial_spot",
+      "display": "Bacterial Spot",
+      "severity_model": false,
+      "is_healthy": false,
+      "pathogen_type": "bacterial",
+      "causative_agent": "Xanthomonas spp.",
+      "treatment_urgency": "high"
+    },
+    {
+      "id": "tomato_early_blight",
+      "index": 1,
+      "hf_label": "Tomato___Early_blight",
+      "display": "Early Blight",
+      "severity_model": false,
+      "is_healthy": false,
+      "pathogen_type": "fungal",
+      "causative_agent": "Alternaria solani",
+      "treatment_urgency": "medium"
+    },
+    {
+      "id": "tomato_late_blight",
+      "index": 2,
+      "hf_label": "Tomato___Late_blight",
+      "display": "Late Blight",
+      "severity_model": false,
+      "is_healthy": false,
+      "pathogen_type": "oomycete",
+      "causative_agent": "Phytophthora infestans",
+      "treatment_urgency": "critical"
+    },
+    {
+      "id": "tomato_leaf_mold",
+      "index": 3,
+      "hf_label": "Tomato___Leaf_Mold",
+      "display": "Leaf Mold",
+      "severity_model": false,
+      "is_healthy": false,
+      "pathogen_type": "fungal",
+      "causative_agent": "Passalora fulva",
+      "treatment_urgency": "medium"
+    },
+    {
+      "id": "tomato_septoria_leaf_spot",
+      "index": 4,
+      "hf_label": "Tomato___Septoria_leaf_spot",
+      "display": "Septoria Leaf Spot",
+      "severity_model": false,
+      "is_healthy": false,
+      "pathogen_type": "fungal",
+      "causative_agent": "Septoria lycopersici",
+      "treatment_urgency": "medium"
+    },
+    {
+      "id": "tomato_spider_mites",
+      "index": 5,
+      "hf_label": "Tomato___Spider_mites Two-spotted_spider_mite",
+      "display": "Spider Mites",
+      "severity_model": false,
+      "is_healthy": false,
+      "pathogen_type": "pest",
+      "causative_agent": "Tetranychus urticae",
+      "treatment_urgency": "medium"
+    },
+    {
+      "id": "tomato_target_spot",
+      "index": 6,
+      "hf_label": "Tomato___Target_Spot",
+      "display": "Target Spot",
+      "severity_model": false,
+      "is_healthy": false,
+      "pathogen_type": "fungal",
+      "causative_agent": "Corynespora cassiicola",
+      "treatment_urgency": "medium"
+    },
+    {
+      "id": "tomato_yellow_leaf_curl_virus",
+      "index": 7,
+      "hf_label": "Tomato___Tomato_Yellow_Leaf_Curl_Virus",
+      "display": "Yellow Leaf Curl Virus",
+      "severity_model": false,
+      "is_healthy": false,
+      "pathogen_type": "viral",
+      "causative_agent": "Tomato yellow leaf curl virus (TYLCV)",
+      "treatment_urgency": "high"
+    },
+    {
+      "id": "tomato_mosaic_virus",
+      "index": 8,
+      "hf_label": "Tomato___Tomato_mosaic_virus",
+      "display": "Mosaic Virus",
+      "severity_model": false,
+      "is_healthy": false,
+      "pathogen_type": "viral",
+      "causative_agent": "Tomato mosaic virus (ToMV)",
+      "treatment_urgency": "high"
+    },
+    {
+      "id": "tomato_healthy",
+      "index": 9,
+      "hf_label": "Tomato___healthy",
+      "display": "Healthy",
+      "severity_model": false,
+      "is_healthy": true,
+      "pathogen_type": null,
+      "causative_agent": null,
+      "treatment_urgency": "none"
+    }
+  ]
+}

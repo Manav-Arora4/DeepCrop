@@ -1,0 +1,84 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: crophealth_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-crophealth}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-crophealth}
+      POSTGRES_DB: ${POSTGRES_DB:-crophealth}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-crophealth}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - agri_network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: crophealth_backend
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-crophealth}:${POSTGRES_PASSWORD:-crophealth}@postgres:5432/${POSTGRES_DB:-crophealth}
+      LLM_PROVIDER: ${LLM_PROVIDER:-ollama}
+      OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://ollama:11434}
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-mistral}
+      EMBEDDING_MODEL: ${EMBEDDING_MODEL:-BAAI/bge-small-en-v1.5}
+      CHROMA_PERSIST_PATH: /app/chroma_db
+      CROPS_DIRECTORY: /app/crops
+      CV_CONFIDENCE_THRESHOLD: ${CV_CONFIDENCE_THRESHOLD:-0.65}
+      SIMULATION_MODE: ${SIMULATION_MODE:-true}
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./crops:/app/crops:ro
+      - ./chroma_db:/app/chroma_db
+      - ./uploads:/app/uploads
+      - ./data:/app/data:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - agri_network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: crophealth_frontend
+    restart: unless-stopped
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+    networks:
+      - agri_network
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: crophealth_ollama
+    restart: unless-stopped
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    networks:
+      - agri_network
+    profiles: ["ollama"]
+
+volumes:
+  postgres_data:
+  ollama_data:
+
+networks:
+  agri_network:
+    driver: bridge

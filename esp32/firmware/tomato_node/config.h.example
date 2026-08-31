@@ -1,0 +1,17 @@
+#ifndef CONFIG_H
+#define CONFIG_H
+
+// --- Wi-Fi Credentials ---
+#define WIFI_SSID "YOUR_WIFI_SSID"
+#define WIFI_PASSWORD "YOUR_WIFI_PASSWORD"
+
+// --- API Endpoint ---
+#define API_BASE_URL "http://192.168.1.100:8000"
+
+// --- Telemetry Parameters ---
+#define DEVICE_ID "esp32_001"
+#define CROP_ID "tomato"
+#define PLANT_ID "plant_01"
+#define TRANSMIT_INTERVAL_MS 60000 // 60 seconds
+
+#endif
