@@ -14,4 +14,23 @@
 #define PLANT_ID "plant_01"
 #define TRANSMIT_INTERVAL_MS 60000 // 60 seconds
 
+// --- Calibration ---
+// Set to true to print raw sensor voltages every second (no Wi-Fi, no uploads).
+// Use it to fill in the values below, then set back to false.
+#define CALIBRATION_MODE false
+
+// Soil moisture AO voltage (mV) with the probe in dry air and in water.
+// Resistive modules read HIGH when dry and LOW when wet.
+#define MOISTURE_DRY_MV 3000.0
+#define MOISTURE_WET_MV 1200.0
+
+// pH probe voltage (mV) measured in pH 7.0 and pH 4.0 buffer solutions.
+// Placeholders until calibrated with real buffers.
+#define PH7_MV 1650.0
+#define PH4_MV 2160.0
+
+// Voltage divider between pH AO and the ESP32 pin: (R_top + R_bottom) / R_bottom.
+// 1.0 = no divider (sensor powered from 3.3V). 10k top / 20k bottom = 1.5.
+#define PH_DIVIDER_RATIO 1.0
+
 #endif
