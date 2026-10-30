@@ -6,8 +6,9 @@
 3. **Soil Moisture Sensor**: Soil Moisture Hygrometer Module (resistive fork probe + LM393 comparator board)
 4. **Soil pH Sensor**: ELECROW Crowtail pH Sensor (analog output)
 5. **Prototyping**: MB102 830-point breadboard, M-M / M-F / F-F jumper wires, 1/4W metal-film resistor kit
-6. **Calibration**: pH 4.0 and pH 7.0 buffer solutions
-7. **Power**: 5V USB adapter + data-capable USB-C cable
+6. **Power / programming**: data-capable USB-C cable (laptop USB or a 5V USB adapter)
+
+No pH buffer solutions are used, so pH readings are uncalibrated and relative only (see [Calibration](#calibration)).
 
 ## Wiring Pinout
 | Sensor | Sensor Pin | ESP32-S3 Pin | Description |
@@ -31,7 +32,7 @@
 ESP32-S3 ADC inputs accept **at most 3.3V**, and readings are only accurate up to about 3.1V.
 
 1. Power the pH board from **3V3** if it works at that voltage. Then no divider is needed (`PH_DIVIDER_RATIO 1.0`).
-2. If it must run from **5V**, measure its output with a multimeter in pH 4.0 buffer, which gives the highest voltage on most boards. If the output can exceed ~3.0V, add a divider from the resistor kit:
+2. If it must run from **5V**, measure its output with a multimeter while the probe is in vinegar. Acidic liquids give the highest voltage on most boards. If the output can exceed ~3.0V, add a divider from the resistor kit:
 
 ```text
 pH AO ──[ 10kΩ ]──┬── GPIO 2
@@ -56,14 +57,18 @@ Calibration constants live in `config.h`. Set `CALIBRATION_MODE true`, flash, an
 1. Hold the probe in dry air and note the moisture mV → `MOISTURE_DRY_MV`.
 2. Put the probe in a glass of water up to the line and note the mV → `MOISTURE_WET_MV`.
 
-**pH (two-point)**
-1. Rinse the probe with distilled water, place it in **pH 7.0** buffer, and wait for the reading to settle (1–2 min). Note the *probe side* mV → `PH7_MV`.
-2. Rinse, place it in **pH 4.0** buffer, and wait. Note the *probe side* mV → `PH4_MV`.
-3. Record the calibration date and buffer lot in your lab notes. Recalibrate before each data-collection session.
+**pH: uncalibrated, relative readings only**
+
+This project does not use pH buffer solutions. The goal is to see that pH *differs* between plants or over time, not to correct soil pH. So:
+- `PH7_MV` / `PH4_MV` keep their placeholder values. The pH number the node sends is a **relative index on an approximate pH scale, not a measured pH**.
+- Readings can be compared with each other only when taken with the same probe, the same settings and similar temperature. A higher or lower value shows a direction of change, not an exact amount.
+- **Record the raw pH millivolts** next to each observation. The node prints them on the Serial Monitor every reading, e.g. `pH: 6.12 (1580 mV)`. The mV value is the honest measurement and can be converted later if buffers ever become available.
+- **In the report and on the dashboard,** call these values "uncalibrated pH (relative)". Do not compare them to agronomic pH thresholds as if they were absolute. Mention the lack of calibration as a limitation.
+- Optional sanity check: rinse the probe and dip it in tap water, then in vinegar. The vinegar reading should move clearly toward acidic. That confirms the probe responds, but it is not a calibration.
 
 Set `CALIBRATION_MODE false` and reflash for normal operation.
 
-> Values in `config.h.example` are placeholders. pH readings are not meaningful until the buffer calibration is done. Treat this probe as prototype hardware, not a laboratory instrument.
+> Moisture values in `config.h.example` are placeholders until you do the dry/wet steps above. Treat both probes as prototype hardware, not laboratory instruments.
 
 ## Flashing Instructions
 1. Install **esp32 by Espressif Systems** (v3.x) in the Arduino IDE Boards Manager.

@@ -3,7 +3,7 @@
 Status of each phase from the project plan, checked against what is actually in the repository.
 
 **Last reviewed:** 2026-10-30
-**Current position:** Phase 1 is wrapping up. Phases 2 and 4 are next and can run in parallel.
+**Current position:** Phase 2 is done. Next: Phase 3 (CV training) and Phase 4 (hardware), plus the Phase 1 check that everything runs.
 
 Status key: ✅ done · 🟡 partly done / code written but not verified · ⬜ not started
 
@@ -36,27 +36,29 @@ Status key: ✅ done · 🟡 partly done / code written but not verified · ⬜ 
 
 **Done when:** `docker compose up` starts Postgres, the backend starts, the backend tests pass, and the dashboard loads and shows simulated sensor data.
 
-## Phase 2 — Dataset Setup ⬜ (next)
+## Phase 2 — Dataset Setup ✅
 
-- [ ] `scripts/data/setup_datasets.py` with `--crop tomato`, `--list`, skip-if-present, and validation
-- [ ] Download the PlantVillage tomato subset (10 classes) into `data/external/plantvillage/`
-- [ ] Download PlantDoc tomato classes into `data/external/plantdoc/` (external test set only)
-- [ ] `data/dataset_manifest.json`: name, source, version, date, license, classes, counts
-- [ ] Quality checks: counts, corrupt files, class balance, duplicates, image sizes
-- [ ] Fix `DATASETS.md`:
-  - It cites a different IoT paper (PMC11479041) from the plan's South-India paper.
-  - It links `data/raw/tomato_iot/MANUAL_ACQUISITION.md`, which does not exist.
-  - Only list data that can actually be obtained.
+- [x] `scripts/data/setup_datasets.py` with `--crop tomato`, `--list`, skip-if-present, `--force` and `--recheck`
+- [x] PlantVillage tomato subset in `data/external/plantvillage/`: 18,160 images, 10 classes
+- [x] PlantDoc tomato classes in `data/external/plantdoc/`: 746 images, no Target Spot, external test only
+- [x] `data/dataset_manifest.json`: source, git commit, download date, license, citation, class counts
+- [x] Quality report (`data/processed/tomato/cv/quality_report.json`):
+  - 0 corrupt files.
+  - Duplicate checks done: exact md5 and near-duplicate dHash.
+  - 0 overlap between PlantVillage and PlantDoc.
+- [x] Official PlantVillage `leaf_id` from `leaf-map.json` written to the index CSV. It covers 12,815 / 18,160 images.
+- [x] `DATASETS.md` rewritten with the real sources, licenses and leaf-grouping coverage, plus the plan's IoT paper as a reference only.
 
-**Done when:** one command sets up the tomato data and writes the manifest.
+**Done when:** one command sets up the tomato data and writes the manifest. ✅ Done 2026-10-30.
 
 ## Phase 3 — Tomato Computer Vision 🟡 (code only)
 
 - [x] EfficientNetB0 model, data loader, train, evaluate and predict scripts
 - [x] Backend CV engine, which falls back to a clearly labelled `demo` model when no weights exist
-- [ ] **Check the leakage-aware split.** PlantVillage has no real `leaf_id`; `data_loader.py` estimates groups by hashing low-resolution images.
-  - Check that near-duplicates actually end up in the same split.
-  - Change the README/DATASETS wording from "strictly enforces leaf_id splitting" to what the code really does.
+- [ ] **Leakage-aware split.** Load samples and `leaf_id` from `data/processed/tomato/cv/plantvillage_index.csv`, which holds the official leaf map. That replaces the perceptual-hash guess in `data_loader.py`.
+  - 5,345 images (29%) have no leaf-map entry. Decide how to handle them: test on mapped images only, or group them by near-duplicate similarity. Say which in the report.
+- [ ] **Fix `train.py --dry-run`.** It saves *untrained* weights as `efficientnet_tomato_v1.pth`, the exact file `cv_engine.py` loads as the real model. A dry run would then serve random predictions labelled as a ready model. Save dry-run output under a different name, or not at all.
+- [ ] `train.py` doesn't load any data yet. It prints a message and exits.
 - [ ] Train a baseline and record accuracy, per-class precision/recall/F1 and the confusion matrix
 - [ ] Test on PlantDoc, and expect a large accuracy drop
 - [ ] Save `crops/tomato/models/cv/efficientnet_tomato_v1.pth` with a version number (`tomato_cv_v1.0`)
@@ -65,8 +67,8 @@ Status key: ✅ done · 🟡 partly done / code written but not verified · ⬜ 
 
 ## Phase 4 — IoT Prototype 🟡 (firmware ready, hardware pending)
 
-- [x] Firmware ported to ESP32-S3, with calibration mode and two-point pH calibration
-- [ ] Buy pH 4.0/7.0 buffers, a data-capable USB-C cable and a 5V adapter
+- [x] Firmware ported to ESP32-S3, with calibration mode
+- [x] Decided: no pH buffers. pH is reported as **uncalibrated, relative only**, raw mV is logged, and this is stated as a limitation. A USB-C cable is already available.
 - [ ] Wire the DHT22, moisture and pH sensors following `esp32/README.md`, and check the pH output stays at or below 3.3V
 - [ ] Flash, calibrate, and test that readings are stable over 24 hours
 - [ ] Confirm readings reach `POST /sensors/reading` and appear on the dashboard as `data_source: real`

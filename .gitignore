@@ -64,3 +64,6 @@ htmlcov/
 
 # ESP32 local config (Wi-Fi credentials)
 esp32/firmware/tomato_node/config.h
+
+# Downloaded datasets (recreate with scripts/data/setup_datasets.py)
+data/external/

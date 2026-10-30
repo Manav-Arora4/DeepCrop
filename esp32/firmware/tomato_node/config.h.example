@@ -24,8 +24,10 @@
 #define MOISTURE_DRY_MV 3000.0
 #define MOISTURE_WET_MV 1200.0
 
-// pH probe voltage (mV) measured in pH 7.0 and pH 4.0 buffer solutions.
-// Placeholders until calibrated with real buffers.
+// pH probe voltage (mV) at pH 7.0 and pH 4.0. No buffer calibration is done in this
+// project, so these stay as placeholders. The reported pH is then UNCALIBRATED and only
+// meaningful as a relative comparison between readings. Never present it as absolute
+// soil pH. Log the raw mV printed on Serial alongside each observation.
 #define PH7_MV 1650.0
 #define PH4_MV 2160.0
 

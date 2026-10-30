@@ -107,7 +107,7 @@ FinalYearProject/
 
 ## 🔬 Academic & Scientific Rigor
 
-1. **No Data Leakage**: HuggingFace `mohanty/PlantVillage` contains multiple photos of the same physical leaf. Our data loaders strictly enforce `leaf_id`-based group splitting rather than naive random image splitting.
+1. **Leakage-Aware Splits**: PlantVillage contains multiple photos of the same physical leaf. `scripts/data/setup_datasets.py` assigns each image its official `leaf_id` from the dataset's `leaf-map.json`, which covers 12,815 of 18,160 tomato images, so splits can be made by leaf instead of by image. See [DATASETS.md](DATASETS.md) for how the remaining unmapped images are handled.
 2. **Transparent Model States**: Predictions clearly reflect their status (`ready`, `demo`, `unavailable`, `error`) in all API responses and UI badges.
 3. **Data Provenance**: Every sensor reading records its `data_source` (`real`, `simulated`, `manual`) across the entire stack.
 4. **Grounded RAG**: Advisory prompts are strictly grounded in agronomic knowledge bases without hallucinating unobserved parameters.
