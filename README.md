@@ -99,9 +99,36 @@ FinalYearProject/
 │   └── yield/                # Future Yield Optimization stub
 ├── frontend/                 # React 18 + Vite + TypeScript + TailwindCSS
 ├── esp32/                    # ESP32 Arduino firmware for IoT hardware
+├── cad/                      # 3D design of the field unit (STEP, printable STLs, browser viewer)
 ├── scripts/                  # Seed scripts, data ingestion, benchmarks
 └── docs/                     # Academic documentation & architecture guides
 ```
+
+---
+
+## 🧊 3D Design (CAD)
+
+The `cad/` folder has a 3D model of the finished field unit: the ESP32-S3 case on a stake, the DHT22 shield and the soil probes in a tomato pot. You can view it in a browser without installing CAD software:
+
+- **Printable parts:** click any `.stl` in [`cad/out/print/`](cad/out/print/) on GitHub to rotate it in 3D.
+- **Full assembly:** drag `cad/out/field_unit_assembly.step` onto [3dviewer.net](https://3dviewer.net). It's free and needs no account.
+- **Interactive viewer with labelled parts:** run it locally:
+
+```bash
+.venv/Scripts/python cad/field_unit.py
+```
+
+```bash
+.venv/Scripts/python cad/pack_viewer.py
+```
+
+```bash
+.venv/Scripts/python -m http.server 8000 --directory cad
+```
+
+Then open http://localhost:8000/viewer.html.
+
+[`cad/README.md`](cad/README.md) has the full instructions, including Onshape and how to change the design.
 
 ---
 

@@ -331,7 +331,10 @@ footer { font-size: 13px; color: var(--muted); border-top: 1px solid var(--line)
     for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
     return bytes.buffer;
   }
-  fetch('models.json').then((r) => r.json()).then((list) => {
+  // Published page serves models.json beside it; a local checkout keeps it in out/viewer/
+  const getModels = () => fetch('models.json').then((r) => (r.ok ? r : fetch('out/viewer/models.json')))
+    .then((r) => { if (!r.ok) throw new Error('models.json not found'); return r.json(); });
+  getModels().then((list) => {
     parts.push(...list);
     buildList();
     for (const p of list) {
@@ -347,7 +350,7 @@ footer { font-size: 13px; color: var(--muted); border-top: 1px solid var(--line)
     document.getElementById('loading').hidden = true;
     applyMaterials();
   }).catch(() => {
-    document.getElementById('loading').textContent = 'The model files could not be loaded. Reload the page to try again.';
+    document.getElementById('loading').textContent = 'The model files could not be loaded. If you opened this from a local copy, run cad/field_unit.py and cad/pack_viewer.py first.';
   });
 
   // Click to select (ignore drags)
