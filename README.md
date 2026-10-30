@@ -112,21 +112,11 @@ The `cad/` folder has a 3D model of the finished field unit: the ESP32-S3 case o
 
 - **Printable parts:** click any `.stl` in [`cad/out/print/`](cad/out/print/) on GitHub to rotate it in 3D.
 - **Full assembly:** drag `cad/out/field_unit_assembly.step` onto [3dviewer.net](https://3dviewer.net). It's free and needs no account.
-- **Interactive viewer with labelled parts:** run it locally:
+- **Interactive viewer with labelled parts:** run this, and it opens in the Helium browser:
 
 ```bash
-.venv/Scripts/python cad/field_unit.py
+py cad/open_viewer.py
 ```
-
-```bash
-.venv/Scripts/python cad/pack_viewer.py
-```
-
-```bash
-.venv/Scripts/python -m http.server 8000 --directory cad
-```
-
-Then open http://localhost:8000/viewer.html.
 
 [`cad/README.md`](cad/README.md) has the full instructions, including Onshape and how to change the design.
 

@@ -30,7 +30,20 @@ To show it to your teacher:
 
 They can't open the link until you do.
 
-### 2. Run the same viewer from this repository
+### Quickest: one command
+
+```bash
+py cad/open_viewer.py
+```
+
+This one command does three things:
+1. Starts a local server.
+2. Opens the viewer in **Helium**, falling back to your default browser if Helium isn't found.
+3. Rebuilds the model first if `field_unit.py` changed and build123d is installed.
+
+Press `Ctrl+C` in the terminal to stop it. If Helium is installed somewhere unusual, set `HELIUM_PATH` to its `chrome.exe`.
+
+### 2. Run the same viewer from this repository (manual steps)
 
 This needs the repo's Python virtual environment (`.venv`) with build123d installed.
 
