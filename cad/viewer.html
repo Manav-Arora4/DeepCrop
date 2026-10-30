@@ -1,0 +1,392 @@
+<title>DeepCrop Field Unit</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a large 3D bench on the left, a part inspector on the right; spec sheets below, like a drawing's title block */
+:root {
+  --bg: #F3F5F1;
+  --surface: #FFFFFF;
+  --ink: #18201A;
+  --muted: #5B665E;
+  --line: #D6DCD3;
+  --accent: #C8372A;
+  --leaf: #2F7A45;
+  --stage: #E7ECE5;
+  --grid: #C5CEC2;
+  --font-display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --font-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111613; --surface: #18201B; --ink: #E6ECE6; --muted: #98A39B; --line: #2C3730;
+    --accent: #F0644F; --leaf: #6CC08A; --stage: #1A221D; --grid: #2E3A32; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #111613; --surface: #18201B; --ink: #E6ECE6; --muted: #98A39B; --line: #2C3730;
+  --accent: #F0644F; --leaf: #6CC08A; --stage: #1A221D; --grid: #2E3A32; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 15px; line-height: 1.55;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 48px;
+}
+.wrap { max-width: 1240px; margin: 0 auto; display: flex; flex-direction: column; gap: 28px; }
+header { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 12px 24px; border-bottom: 2px solid var(--ink); padding-bottom: 14px; }
+h1 { font-family: var(--font-display); font-weight: 800; font-size: clamp(28px, 4.5vw, 44px); letter-spacing: -0.02em; line-height: 1.05; margin: 0; text-wrap: balance; }
+.sub { color: var(--muted); margin: 6px 0 0; max-width: 62ch; }
+.titleblock { font-family: var(--font-mono); font-size: 12px; display: grid; grid-template-columns: auto auto; gap: 2px 14px; color: var(--muted); }
+.titleblock b { color: var(--ink); font-weight: 500; }
+.status { display: inline-block; font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); border: 1px solid var(--accent); padding: 1px 7px; border-radius: 3px; }
+
+.bench { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 20px; }
+@media (max-width: 900px) { .bench { grid-template-columns: minmax(0, 1fr); } }
+.stage { position: relative; background: var(--stage); border: 1px solid var(--line); border-radius: 6px; height: min(72vh, 680px); min-height: 380px; overflow: hidden; }
+#view { width: 100%; height: 100%; display: block; cursor: grab; touch-action: none; }
+#view:active { cursor: grabbing; }
+.toolbar { position: absolute; left: 12px; top: 12px; right: 12px; display: flex; flex-wrap: wrap; gap: 6px; pointer-events: none; }
+.toolbar button { pointer-events: auto; }
+button.chip {
+  font-family: var(--font-mono); font-size: 12px; color: var(--ink); background: var(--surface); border: 1px solid var(--line);
+  padding: 6px 10px; border-radius: 4px; cursor: pointer;
+}
+button.chip[aria-pressed="true"] { border-color: var(--ink); background: var(--ink); color: var(--bg); }
+button.chip:focus-visible, .partrow:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.loading[hidden] { display: none; }
+.loading { position: absolute; inset: 0; display: grid; place-items: center; font-family: var(--font-mono); font-size: 13px; color: var(--muted); }
+.hint { position: absolute; left: 12px; bottom: 10px; font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
+.scale { position: absolute; right: 12px; bottom: 10px; font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
+
+aside { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.inspect { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 14px 16px; }
+.eyebrow { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin: 0 0 4px; }
+.inspect h2 { font-family: var(--font-display); font-size: 20px; margin: 0 0 6px; font-weight: 700; }
+.inspect p { margin: 0; color: var(--muted); }
+.groups { display: flex; flex-direction: column; gap: 12px; max-height: 470px; overflow-y: auto; padding-right: 4px; }
+@media (max-width: 900px) { .groups { max-height: none; } }
+.group h3 { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin: 0 0 4px; display: flex; justify-content: space-between; align-items: center; }
+.group h3 button { font: inherit; background: none; border: 0; color: var(--ink); cursor: pointer; text-decoration: underline; text-underline-offset: 2px; padding: 0; }
+.partrow { display: flex; align-items: center; gap: 8px; width: 100%; text-align: left; background: none; border: 0; padding: 4px 6px; border-radius: 4px; font: inherit; font-size: 14px; color: var(--ink); cursor: pointer; }
+.partrow:hover { background: var(--stage); }
+.partrow.active { background: var(--stage); box-shadow: inset 2px 0 0 var(--accent); }
+.partrow.off { color: var(--muted); text-decoration: line-through; }
+.swatch { width: 12px; height: 12px; border-radius: 2px; border: 1px solid var(--line); flex: none; }
+
+.sheets { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+@media (max-width: 1000px) { .sheets { grid-template-columns: minmax(0, 1fr); } }
+.sheet { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 16px 18px; min-width: 0; }
+.sheet h2 { font-family: var(--font-display); font-weight: 700; font-size: 18px; margin: 0 0 10px; }
+table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+td, th { text-align: left; padding: 6px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-family: var(--font-mono); font-size: 11px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; white-space: nowrap; padding-left: 12px; text-align: right; }
+.tag { font-family: var(--font-mono); font-size: 10.5px; padding: 1px 6px; border-radius: 3px; border: 1px solid var(--line); color: var(--muted); white-space: nowrap; }
+.tag.have { color: var(--leaf); border-color: var(--leaf); }
+.tag.make { color: var(--accent); border-color: var(--accent); }
+.note { font-size: 13.5px; color: var(--muted); margin: 10px 0 0; }
+code { font-family: var(--font-mono); font-size: 12.5px; }
+footer { font-size: 13px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 12px; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <div>
+      <h1>DeepCrop Field Unit</h1>
+      <p class="sub">The sensor node for one potted tomato plant. The ESP32-S3 sits in a sealed case on a stake. The soil probes go into the root zone, and the DHT22 hangs in a shield at canopy height.</p>
+    </div>
+    <div class="titleblock">
+      <span>Project</span><b>DeepCrop final-year project</b>
+      <span>Units</span><b>mm</b>
+      <span>Overall</span><b>432 × 260 × 657</b>
+      <span>Status</span><span class="status">Design proposal</span>
+    </div>
+  </header>
+
+  <section class="bench" aria-label="3D model">
+    <div class="stage">
+      <canvas id="view" aria-label="Rotatable 3D model of the field unit"></canvas>
+      <div class="toolbar" role="toolbar" aria-label="View options">
+        <button class="chip" id="b-xray" aria-pressed="false">See inside case</button>
+        <button class="chip" id="b-explode" aria-pressed="false">Open lid</button>
+        <button class="chip" id="b-plant" aria-pressed="true">Plant</button>
+        <button class="chip" id="b-pot" aria-pressed="false">Cut pot</button>
+        <button class="chip" id="b-case">Zoom to case</button>
+        <button class="chip" id="b-reset">Reset view</button>
+      </div>
+      <div class="loading" id="loading">Loading 24 parts…</div>
+      <div class="hint">Drag to rotate · scroll or pinch to zoom · click a part</div>
+      <div class="scale">Grid squares: 50 mm</div>
+    </div>
+    <aside>
+      <div class="inspect" aria-live="polite">
+        <p class="eyebrow" id="i-group">Selected part</p>
+        <h2 id="i-name">Click any part</h2>
+        <p id="i-desc">Click a part in the model or in the list below to see what it is and what it does.</p>
+      </div>
+      <div class="groups" id="groups"></div>
+    </aside>
+  </section>
+
+  <section class="sheets">
+    <div class="sheet">
+      <h2>Wiring</h2>
+      <table>
+        <tr><th>Sensor</th><th>Pin</th><th style="text-align:right">ESP32-S3</th></tr>
+        <tr><td>DHT22</td><td>DATA</td><td class="num">GPIO 4</td></tr>
+        <tr><td>Soil moisture</td><td>AO</td><td class="num">GPIO 1 · ADC1</td></tr>
+        <tr><td>pH board</td><td>SIG</td><td class="num">GPIO 2 · ADC1</td></tr>
+        <tr><td>All sensors</td><td>VCC / GND</td><td class="num">3V3 / GND</td></tr>
+        <tr><td>Power</td><td>USB-C</td><td class="num">5 V adapter</td></tr>
+      </table>
+      <p class="note">Readings go over Wi-Fi to the backend every 60 s. The pH probe is uncalibrated, so its readings show relative differences, not absolute pH.</p>
+    </div>
+    <div class="sheet">
+      <h2>Key dimensions</h2>
+      <table>
+        <tr><td>Case, outside</td><td class="num">36 × 80 × 104</td></tr>
+        <tr><td>Case wall</td><td class="num">2.5</td></tr>
+        <tr><td>Lid screws</td><td class="num">4 × M3</td></tr>
+        <tr><td>Cable glands</td><td class="num">3 × PG7</td></tr>
+        <tr><td>Stake (hollow conduit)</td><td class="num">Ø12 × 380</td></tr>
+        <tr><td>Shield plates</td><td class="num">4 × Ø60</td></tr>
+        <tr><td>DHT22 height above soil</td><td class="num">≈ 250</td></tr>
+        <tr><td>Moisture fork depth</td><td class="num">≈ 45</td></tr>
+        <tr><td>pH bulb depth</td><td class="num">≈ 55</td></tr>
+        <tr><td>Pot (top Ø × height)</td><td class="num">250 × 220</td></tr>
+      </table>
+    </div>
+    <div class="sheet">
+      <h2>Parts</h2>
+      <table>
+        <tr><td>ESP32-S3 DevKit N16R8</td><td class="num"><span class="tag have">ordered</span></td></tr>
+        <tr><td>DHT22 / AM2302</td><td class="num"><span class="tag have">ordered</span></td></tr>
+        <tr><td>Soil moisture module</td><td class="num"><span class="tag have">ordered</span></td></tr>
+        <tr><td>Crowtail pH sensor</td><td class="num"><span class="tag have">ordered</span></td></tr>
+        <tr><td>USB-C cable</td><td class="num"><span class="tag have">have</span></td></tr>
+        <tr><td>Case body, lid, shield</td><td class="num"><span class="tag make">3D print</span></td></tr>
+        <tr><td>12 mm PVC conduit</td><td class="num"><span class="tag">to buy</span></td></tr>
+        <tr><td>3 × PG7 glands, 4 × M3 screws</td><td class="num"><span class="tag">to buy</span></td></tr>
+        <tr><td>5 V USB adapter</td><td class="num"><span class="tag">to buy</span></td></tr>
+      </table>
+    </div>
+  </section>
+
+  <footer>
+    The model is generated from <code>cad/field_unit.py</code> in the DeepCrop repository. The CAD files are in <code>cad/out/</code>: the full assembly as STEP for Fusion 360, FreeCAD or Onshape, and the printable case, lid and shield as STL. The plant shape is illustrative. Board sizes are nominal, so measure your own parts before printing.
+  </footer>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/STLLoader.js"></script>
+<script>
+(function () {
+  const canvas = document.getElementById('view');
+  const stage = canvas.parentElement;
+  const css = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(35, 1, 5, 6000);
+  const controls = new THREE.OrbitControls(camera, canvas);
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.08;
+
+  scene.add(new THREE.HemisphereLight(0xffffff, 0x8a8f86, 0.75));
+  const sun = new THREE.DirectionalLight(0xffffff, 0.75);
+  sun.position.set(400, 900, 600);
+  scene.add(sun);
+  const fill = new THREE.DirectionalLight(0xffffff, 0.3);
+  fill.position.set(-600, 300, -400);
+  scene.add(fill);
+
+  // CAD is Z-up in mm; three.js is Y-up
+  const model = new THREE.Group();
+  model.rotation.x = -Math.PI / 2;
+  scene.add(model);
+
+  let grid;
+  function applyTheme() {
+    scene.background = new THREE.Color(css('--stage'));
+    if (grid) scene.remove(grid);
+    grid = new THREE.GridHelper(1000, 20, new THREE.Color(css('--grid')), new THREE.Color(css('--grid')));
+    grid.position.set(80, 0, 0);
+    scene.add(grid);
+  }
+  applyTheme();
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyTheme);
+  new MutationObserver(applyTheme).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
+  const HOME = { pos: new THREE.Vector3(820, 520, 760), target: new THREE.Vector3(90, 300, 0) };
+  const CASE = { pos: new THREE.Vector3(330, 330, 170), target: new THREE.Vector3(125, 300, 0) };
+  function fly(view) {
+    camera.position.copy(view.pos);
+    controls.target.copy(view.target);
+    controls.update();
+  }
+  fly(HOME);
+
+  function resize() {
+    const w = stage.clientWidth, h = stage.clientHeight;
+    renderer.setSize(w, h, false);
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+  }
+  new ResizeObserver(resize).observe(stage);
+  resize();
+
+  const meshes = {};
+  const parts = [];
+  const rows = {};
+  let selected = null;
+  const state = { xray: false, explode: false, plant: true, cutPot: false };
+
+  function baseOpacity(name) {
+    if (name === 'case_lid') return state.xray ? 0.15 : 0.45;
+    if (name === 'case_body') return state.xray ? 0.18 : 1;
+    if (name === 'pot') return state.cutPot ? 0.22 : 1;
+    if (name === 'soil') return state.cutPot ? 0.35 : 1;
+    return 1;
+  }
+  function applyMaterials() {
+    for (const p of parts) {
+      const m = meshes[p.name];
+      if (!m) continue;
+      const o = baseOpacity(p.name);
+      m.material.opacity = o;
+      m.material.transparent = o < 1;
+      m.material.depthWrite = o >= 0.99;
+      m.material.emissive.setHex(selected === p.name ? 0x5a1a10 : 0x000000);
+      m.position.x = (p.name === 'case_lid' && state.explode) ? 60 : 0;
+    }
+  }
+
+  function select(name) {
+    selected = name;
+    const p = parts.find((q) => q.name === name);
+    document.getElementById('i-group').textContent = p ? p.group : 'Selected part';
+    document.getElementById('i-name').textContent = p ? pretty(p.name) : 'Click any part';
+    document.getElementById('i-desc').textContent = p ? p.description : '';
+    for (const [n, r] of Object.entries(rows)) r.classList.toggle('active', n === name);
+    applyMaterials();
+  }
+  function pretty(n) {
+    const map = { esp32_pcb: 'ESP32-S3 board', esp32_parts: 'ESP32-S3 components', esp32_antenna: 'Wi-Fi antenna', dht22: 'DHT22 sensor',
+      ph_probe: 'pH probe', ph_bulb: 'pH glass bulb', case_body: 'Case body', case_lid: 'Case lid', cable_usb: 'USB-C cable',
+      cable_dht22: 'DHT22 cable', cable_ph: 'pH cable', cable_moisture: 'Moisture cable', sensor_boards: 'Sensor interface boards',
+      sensor_board_parts: 'Board components', moisture_probe: 'Soil moisture probe', moisture_pins: 'Probe connector',
+      shield: 'Radiation shield', glands: 'Cable glands', adapter: '5 V USB adapter' };
+    return map[n] || n.charAt(0).toUpperCase() + n.slice(1).replace(/_/g, ' ');
+  }
+  function setVisible(name, on) {
+    if (meshes[name]) meshes[name].visible = on;
+    if (rows[name]) rows[name].classList.toggle('off', !on);
+  }
+
+  function buildList() {
+    const groupsEl = document.getElementById('groups');
+    const order = ['Electronics', 'Sensors', 'Case', 'Mount', 'Cables', 'Power', 'Plant'];
+    for (const g of order) {
+      const items = parts.filter((p) => p.group === g);
+      if (!items.length) continue;
+      const box = document.createElement('div');
+      box.className = 'group';
+      const h = document.createElement('h3');
+      h.textContent = g;
+      const t = document.createElement('button');
+      t.type = 'button';
+      t.textContent = 'hide';
+      t.addEventListener('click', () => {
+        const on = t.textContent === 'show';
+        items.forEach((p) => setVisible(p.name, on));
+        t.textContent = on ? 'hide' : 'show';
+        if (g === 'Plant') { state.plant = on; document.getElementById('b-plant').setAttribute('aria-pressed', String(on)); }
+      });
+      h.appendChild(t);
+      box.appendChild(h);
+      for (const p of items) {
+        const r = document.createElement('button');
+        r.type = 'button';
+        r.className = 'partrow';
+        r.innerHTML = '<span class="swatch"></span><span></span>';
+        r.firstChild.style.background = p.color;
+        r.lastChild.textContent = pretty(p.name);
+        r.addEventListener('click', () => select(p.name));
+        rows[p.name] = r;
+        box.appendChild(r);
+      }
+      groupsEl.appendChild(box);
+    }
+  }
+
+  const loader = new THREE.STLLoader();
+  function decode(b64) {
+    const bin = atob(b64);
+    const bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    return bytes.buffer;
+  }
+  fetch('models.json').then((r) => r.json()).then((list) => {
+    parts.push(...list);
+    buildList();
+    for (const p of list) {
+      const geo = loader.parse(decode(p.stl_base64));
+      delete p.stl_base64;
+      const mat = new THREE.MeshStandardMaterial({ color: p.color, roughness: 0.62, metalness: p.name === 'esp32_parts' ? 0.5 : 0.05, side: THREE.DoubleSide });
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.userData.name = p.name;
+      meshes[p.name] = mesh;
+      model.add(mesh);
+    }
+  }).then(() => {
+    document.getElementById('loading').hidden = true;
+    applyMaterials();
+  }).catch(() => {
+    document.getElementById('loading').textContent = 'The model files could not be loaded. Reload the page to try again.';
+  });
+
+  // Click to select (ignore drags)
+  const ray = new THREE.Raycaster();
+  let down = null;
+  canvas.addEventListener('pointerdown', (e) => { down = [e.clientX, e.clientY]; });
+  canvas.addEventListener('pointerup', (e) => {
+    if (!down || Math.hypot(e.clientX - down[0], e.clientY - down[1]) > 5) return;
+    const rect = canvas.getBoundingClientRect();
+    const v = new THREE.Vector2(((e.clientX - rect.left) / rect.width) * 2 - 1, -((e.clientY - rect.top) / rect.height) * 2 + 1);
+    ray.setFromCamera(v, camera);
+    const hits = ray.intersectObjects(Object.values(meshes).filter((m) => m.visible && m.material.opacity > 0.3));
+    select(hits.length ? hits[0].object.userData.name : null);
+  });
+
+  function toggle(id, key, after) {
+    const b = document.getElementById(id);
+    b.addEventListener('click', () => {
+      state[key] = !state[key];
+      b.setAttribute('aria-pressed', String(state[key]));
+      if (after) after(state[key]);
+      applyMaterials();
+    });
+  }
+  toggle('b-xray', 'xray');
+  toggle('b-explode', 'explode');
+  toggle('b-pot', 'cutPot');
+  toggle('b-plant', 'plant', (on) => ['plant', 'fruit'].forEach((n) => setVisible(n, on)));
+  document.getElementById('b-case').addEventListener('click', () => {
+    fly(CASE);
+    if (!state.xray) document.getElementById('b-xray').click();
+  });
+  document.getElementById('b-reset').addEventListener('click', () => fly(HOME));
+
+  (function loop() {
+    if (stage.clientWidth && Math.abs(canvas.clientWidth * renderer.getPixelRatio() - canvas.width) > 1) resize();
+    controls.update();
+    renderer.render(scene, camera);
+    requestAnimationFrame(loop);
+  })();
+})();
+</script>

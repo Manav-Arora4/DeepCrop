@@ -67,3 +67,6 @@ esp32/firmware/tomato_node/config.h
 
 # Downloaded datasets (recreate with scripts/data/setup_datasets.py)
 data/external/
+
+# CAD viewer meshes (regenerate: cad/field_unit.py then cad/pack_viewer.py)
+cad/out/viewer/
