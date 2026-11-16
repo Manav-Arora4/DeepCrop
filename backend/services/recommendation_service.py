@@ -151,7 +151,7 @@ Please provide an evidence-based recommendation for the farmer.
             sensor_reading_id=req.sensor_reading_id,
             cv_prediction_id=req.cv_prediction_id,
             risk_prediction_id=req.risk_prediction_id,
-            summary=raw_text[:300] + "...",
+            summary=raw_text,
             contributing_factors=risk_obj.contributing_factors if risk_obj else ["Environmental observation"],
             recommended_actions=actions[:5],
             prevention_steps=[],

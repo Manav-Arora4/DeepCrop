@@ -9,6 +9,7 @@ import type { Recommendation } from '../api/types'
 import DataSourceBadge from '../components/badges/DataSourceBadge'
 import ModelStatusBadge from '../components/badges/ModelStatusBadge'
 import PageHeader from '../components/PageHeader'
+import AdviceText from '../components/AdviceText'
 import { CROP_ID, PLANT_ID } from '../components/Layout'
 
 const URGENCY: Record<string, string> = {
@@ -113,7 +114,9 @@ export default function RecommendationsPage() {
         {!reading && !cv && <p className="mt-3 text-xs text-muted">Add a sensor reading or scan a leaf first; advice needs at least one.</p>}
         {generate.isError && (
           <p className="mt-3 text-xs text-alert">
-            Advice couldn't be generated. Check that Ollama is running (<code>ollama serve</code>) with the configured model pulled.
+            {String((generate.error as any)?.code) === 'ECONNABORTED'
+              ? 'The language model took longer than 3 minutes. Try again; the second run is faster because the model stays loaded.'
+              : "Advice couldn't be generated. Check that Ollama is running (ollama serve) with the configured model pulled."}
           </p>
         )}
       </section>
@@ -130,21 +133,8 @@ export default function RecommendationsPage() {
             <span className={clsx('chip capitalize', URGENCY[shown.urgency] ?? 'bg-tile text-muted')}>{shown.urgency} urgency</span>
           </div>
 
-          <p className="max-w-[72ch] whitespace-pre-wrap text-[15px] leading-relaxed text-ink">{shown.summary}</p>
-
-          {shown.recommended_actions?.length > 0 && (
-            <section aria-labelledby="actions-title">
-              <h3 id="actions-title" className="text-[17px] font-semibold tracking-display">Next steps</h3>
-              <ol className="mt-2 flex flex-col gap-2">
-                {shown.recommended_actions.map((a, i) => (
-                  <li key={i} className="flex gap-3 rounded-tile bg-tile p-3 text-sm">
-                    <span className="num grid h-6 w-6 shrink-0 place-items-center rounded-full bg-ink text-xs font-semibold text-card">{i + 1}</span>
-                    <span className="pt-0.5">{a.replace(/^\d+\.\s*/, '')}</span>
-                  </li>
-                ))}
-              </ol>
-            </section>
-          )}
+          {/* The advice text already contains its own action list, so it is rendered once, in full */}
+          <AdviceText text={shown.summary} />
 
           {shown.prevention_steps?.length > 0 && (
             <section aria-labelledby="prevention-title">
