@@ -29,9 +29,10 @@ def main():
     with open(classes_file) as f:
         classes = json.load(f).get("classes", [])
 
-    model_pth = Path(f"crops/{args.crop}/models/cv/efficientnet_{args.crop}_v1.pth")
-    card_path = model_pth.parent / "model_card_v1.json"
-    version = json.loads(card_path.read_text())["version"] if card_path.exists() else "v1.0"
+    # The active model is whatever crop.json's cv_model points to (same as the backend)
+    cv_cfg = json.loads(Path(f"crops/{args.crop}/config/crop.json").read_text()).get("cv_model", {})
+    model_pth = Path(cv_cfg.get("path", f"crops/{args.crop}/models/cv/efficientnet_{args.crop}_v1.pth"))
+    version = cv_cfg.get("version", "v1.0")
     if model_pth.exists():
         model = EfficientNetCVModel(model_pth, args.crop, classes, version=version)
     else:

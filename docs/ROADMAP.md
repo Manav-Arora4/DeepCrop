@@ -3,7 +3,7 @@
 Status of each phase from the project plan, checked against what is actually in the repository.
 
 **Last reviewed:** 2026-11-16
-**Current position:** Phase 3 v1 is trained: 99.6% on PlantVillage, 28.7% on real-world PlantDoc photos. Next: close the field-photo gap (Phase 3 v2), Phase 4 hardware, and the Phase 1 run check.
+**Current position:** Phase 3 v2 is in use: 99.5% on PlantVillage, 63.3% on real-world PlantDoc photos (v1 got 27.1%). Next: the Phase 1 run check, then Phase 4 hardware.
 
 Status key: ✅ done · 🟡 partly done / code written but not verified · ⬜ not started
 
@@ -51,7 +51,7 @@ Status key: ✅ done · 🟡 partly done / code written but not verified · ⬜ 
 
 **Done when:** one command sets up the tomato data and writes the manifest. ✅ Done 2026-10-30.
 
-## Phase 3 — Tomato Computer Vision 🟡 (v1 trained; field accuracy is low)
+## Phase 3 — Tomato Computer Vision 🟡 (v2 in use; backend check pending)
 
 - [x] EfficientNetB0 model, data loader, train, evaluate and predict scripts
 - [x] Backend CV engine, which falls back to a clearly labelled `demo` model when no weights exist
@@ -63,18 +63,24 @@ Status key: ✅ done · 🟡 partly done / code written but not verified · ⬜ 
 - [x] **Training and inference build the same model** (`build_efficientnet_b0`). Before, saved weights could not load in the backend.
 - [x] **Model registered in `crop.json`** (`cv_model`), so the backend loads it instead of the demo model.
 - [x] **Trained `tomato_cv_v1.0`:** 15 epochs, 7.6 min on an RTX 4060. Best validation macro-F1 0.997 at epoch 14.
-- [x] **Results** in [`docs/results/cv_tomato_v1.md`](results/cv_tomato_v1.md):
+- [x] **v1 field-photo gap found.** On real-world PlantDoc photos, v1 predicted Early Blight for 54% of them.
+- [x] **PlantDoc split.** PlantDoc's own `test/` folder has only 69 images, 5 of them duplicates of `train/` images. So all 746 photos were pooled and split 60/15/25 by group, giving a 188-photo held-out test set.
+- [x] **Trained `tomato_cv_v2.0`:**
+  - Training data: PlantVillage plus the PlantDoc train split (repeated ×6).
+  - Field-photo augmentation: tighter crops, blur, perspective, lighting and occlusion.
+  - Best epoch chosen on PlantVillage and PlantDoc validation together.
+  - 20 epochs, about 11 min.
+- [x] **Results** in [`docs/results/cv_tomato_comparison.md`](results/cv_tomato_comparison.md). The test sets are the same for both versions:
 
-  | Test set | Accuracy | Macro-F1 |
-  |---|---:|---:|
-  | PlantVillage test, 2,594 images | 99.6% | 0.994 |
-  | PlantVillage test, leaf-map verified, 1,832 images | 99.5% | 0.994 |
-  | PlantDoc real-world, 746 images | **28.7%** | **0.169** |
+  | Model | PlantVillage test acc | PlantDoc test acc (95% CI) | PlantDoc macro-F1 |
+  |---|---:|---:|---:|
+  | v1, PlantVillage only | 99.6% | 27.1% (21–34%) | 0.154 |
+  | **v2, + PlantDoc, field augmentation** | 99.5% | **63.3% (56–70%)** | **0.666** |
 
-- [ ] **Field-photo gap.** On PlantDoc the model predicts Early Blight for 54% of photos. Your own phone photos (Phase 5) will look like PlantDoc, not PlantVillage, so this needs a v2 before Phase 6. Options:
-  - Fine-tune on PlantDoc's own `train/` folder and test on its `test/` folder.
-  - Use stronger augmentation, such as background replacement, random crops and blur.
-  - Crop the leaf before classifying.
+- [x] **The app uses v2.** `crop.json` `cv_model` now points to `efficientnet_tomato_v2.pth`.
+- [ ] **Still weak on field photos:**
+  - Bacterial Spot and Early Blight have 41% recall each, and Mosaic Virus 50%.
+  - Possible next steps: leaf detection/cropping before classification, or more real-world tomato photos, including your own from Phase 5.
 - [ ] `.pth` weights are git-ignored. Rebuild with `python -m ml.cv.splits` then `python -m ml.cv.train`, or decide to commit the 16 MB file.
 - [ ] Check `/cv/predict` end to end once the backend runs (Phase 1). The model loads and predicts correctly through `ml.cv.predict`.
 

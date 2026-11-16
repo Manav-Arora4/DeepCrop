@@ -17,11 +17,12 @@ from torch.utils.data import Dataset
 from torchvision import transforms
 
 SPLITS_CSV = Path("data/processed/tomato/cv/splits.csv")
+PLANTDOC_SPLITS_CSV = Path("data/processed/tomato/cv/plantdoc_splits.csv")
 PLANTDOC_INDEX = Path("data/processed/tomato/cv/plantdoc_index.csv")
 
 
 def load_split(split: str, splits_csv: Path = SPLITS_CSV) -> List[Dict[str, Any]]:
-    """Return PlantVillage samples for 'train', 'val' or 'test'."""
+    """Return samples for 'train', 'val' or 'test' (PlantVillage by default; pass PLANTDOC_SPLITS_CSV for PlantDoc)."""
     if not splits_csv.exists():
         raise FileNotFoundError(f"{splits_csv} not found. Run: python -m ml.cv.splits")
     with open(splits_csv, encoding="utf-8") as f:
@@ -57,17 +58,36 @@ class LeafImageDataset(Dataset):
         return image, item["label"], idx
 
 
-def get_data_transforms(image_size: int = 224) -> Tuple[transforms.Compose, transforms.Compose]:
-    """Return training (with augmentation) and evaluation transforms."""
-    train_transform = transforms.Compose([
-        transforms.RandomResizedCrop(image_size, scale=(0.7, 1.0)),
-        transforms.RandomHorizontalFlip(),
-        transforms.RandomVerticalFlip(),
-        transforms.RandomRotation(20),
-        transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.02),
-        transforms.ToTensor(),
-        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-    ])
+def get_data_transforms(image_size: int = 224, strong: bool = False) -> Tuple[transforms.Compose, transforms.Compose]:
+    """Return training (with augmentation) and evaluation transforms.
+
+    strong=True adds field-photo style changes (tighter crops, blur, perspective, lighting,
+    occlusion) so a model trained mostly on plain-background lab photos copes with real photos.
+    """
+    if strong:
+        train_transform = transforms.Compose([
+            transforms.RandomResizedCrop(image_size, scale=(0.25, 1.0), ratio=(0.75, 1.33)),
+            transforms.RandomHorizontalFlip(),
+            transforms.RandomVerticalFlip(),
+            transforms.RandomRotation(30),
+            transforms.RandomPerspective(distortion_scale=0.25, p=0.3),
+            transforms.ColorJitter(brightness=0.4, contrast=0.4, saturation=0.4, hue=0.04),
+            transforms.RandomGrayscale(p=0.05),
+            transforms.RandomApply([transforms.GaussianBlur(kernel_size=5, sigma=(0.1, 2.0))], p=0.3),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+            transforms.RandomErasing(p=0.25, scale=(0.02, 0.15)),
+        ])
+    else:
+        train_transform = transforms.Compose([
+            transforms.RandomResizedCrop(image_size, scale=(0.7, 1.0)),
+            transforms.RandomHorizontalFlip(),
+            transforms.RandomVerticalFlip(),
+            transforms.RandomRotation(20),
+            transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.02),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+        ])
 
     # Must match the inference transform in ml/cv/models/efficientnet.py
     val_transform = transforms.Compose([

@@ -1,0 +1,467 @@
+{
+  "version": "tomato_cv_v2.0",
+  "architecture": "efficientnet_b0 (ImageNet pretrained, new 10-class head)",
+  "weights_file": "efficientnet_tomato_v2.pth",
+  "trained_at": "2026-11-16T12:15:26+00:00",
+  "code_commit": "4e65444",
+  "device": "NVIDIA GeForce RTX 4060 Laptop GPU",
+  "classes": [
+    "tomato_bacterial_spot",
+    "tomato_early_blight",
+    "tomato_late_blight",
+    "tomato_leaf_mold",
+    "tomato_septoria_leaf_spot",
+    "tomato_spider_mites",
+    "tomato_target_spot",
+    "tomato_yellow_leaf_curl_virus",
+    "tomato_mosaic_virus",
+    "tomato_healthy"
+  ],
+  "input": {
+    "size": 224,
+    "resize": "squash to 224x224",
+    "normalize": "ImageNet mean/std"
+  },
+  "training": {
+    "epochs": 20,
+    "batch_size": 64,
+    "lr": 0.0003,
+    "patience": 5,
+    "seed": 42,
+    "plantdoc_repeat": 6,
+    "strong_aug": true
+  },
+  "training_minutes": 12.3,
+  "best_epoch": 18,
+  "selection_metric": "mean val macro-F1 over plantvillage + plantdoc",
+  "best_selection_score": 0.7876,
+  "trained_on_plantdoc": true,
+  "history": [
+    {
+      "epoch": 1,
+      "train": {
+        "loss": 1.0335828361452604,
+        "accuracy": 0.7831070696721312,
+        "macro_f1": 0.7279296622077837
+      },
+      "val": {
+        "plantvillage": {
+          "loss": 0.6553850748430682,
+          "accuracy": 0.9488067744418783,
+          "macro_f1": 0.9282583451082278
+        },
+        "plantdoc": {
+          "loss": 1.5301413876669747,
+          "accuracy": 0.5,
+          "macro_f1": 0.44270220588235293
+        }
+      },
+      "selection_score": 0.6854802754952903
+    },
+    {
+      "epoch": 2,
+      "train": {
+        "loss": 0.7511244829072327,
+        "accuracy": 0.901063012295082,
+        "macro_f1": 0.8778861995362229
+      },
+      "val": {
+        "plantvillage": {
+          "loss": 0.5924875005747008,
+          "accuracy": 0.972671285604311,
+          "macro_f1": 0.9681812910553443
+        },
+        "plantdoc": {
+          "loss": 1.640354139464242,
+          "accuracy": 0.5535714285714286,
+          "macro_f1": 0.5191241603481911
+        }
+      },
+      "selection_score": 0.7436527257017678
+    },
+    {
+      "epoch": 3,
+      "train": {
+        "loss": 0.684186357210894,
+        "accuracy": 0.9320568647540983,
+        "macro_f1": 0.9172415075776404
+      },
+      "val": {
+        "plantvillage": {
+          "loss": 0.5744893099364177,
+          "accuracy": 0.9734411085450346,
+          "macro_f1": 0.9701321524697291
+        },
+        "plantdoc": {
+          "loss": 1.687142780848912,
+          "accuracy": 0.5803571428571429,
+          "macro_f1": 0.5257684960875704
+        }
+      },
+      "selection_score": 0.7479503242786497
+    },
+    {
+      "epoch": 4,
+      "train": {
+        "loss": 0.6500212486650123,
+        "accuracy": 0.9449282786885246,
+        "macro_f1": 0.9340683022891978
+      },
+      "val": {
+        "plantvillage": {
+          "loss": 0.5461420735732879,
+          "accuracy": 0.9857582755966128,
+          "macro_f1": 0.9823044684377666
+        },
+        "plantdoc": {
+          "loss": 1.8256597859518868,
+          "accuracy": 0.5178571428571429,
+          "macro_f1": 0.5186874827502572
+        }
+      },
+      "selection_score": 0.7504959755940119
+    },
+    {
+      "epoch": 5,
+      "train": {
+        "loss": 0.6265709141238791,
+        "accuracy": 0.9553022540983607,
+        "macro_f1": 0.9467908877374119
+      },
+      "val": {
+        "plantvillage": {
+          "loss": 0.5471400266615036,
+          "accuracy": 0.9865280985373364,
+          "macro_f1": 0.9824577866275745
+        },
+        "plantdoc": {
+          "loss": 1.748086895261492,
+          "accuracy": 0.5446428571428571,
+          "macro_f1": 0.49072021116138764
+        }
+      },
+      "selection_score": 0.7365889988944812
+    },
+    {
+      "epoch": 6,
+      "train": {
+        "loss": 0.6114004166399847,
+        "accuracy": 0.9620261270491803,
+        "macro_f1": 0.9545782487717348
+      },
+      "val": {
+        "plantvillage": {
+          "loss": 0.5370457725308325,
+          "accuracy": 0.9892224788298691,
+          "macro_f1": 0.9874297392297114
+        },
+        "plantdoc": {
+          "loss": 1.7244287048067366,
+          "accuracy": 0.5446428571428571,
+          "macro_f1": 0.5325979162186059
+        }
+      },
+      "selection_score": 0.7600138277241586
+    },
+    {
+      "epoch": 7,
+      "train": {
+        "loss": 0.5965411926879257,
+        "accuracy": 0.9676613729508197,
+        "macro_f1": 0.9605579620038351
+      },
+      "val": {
+        "plantvillage": {
+          "loss": 0.5412413724759068,
+          "accuracy": 0.9865280985373364,
+          "macro_f1": 0.9856386617534312
+        },
+        "plantdoc": {
+          "loss": 1.8012965747288294,
+          "accuracy": 0.5625,
+          "macro_f1": 0.5390865930671029
+        }
+      },
+      "selection_score": 0.7623626274102671
+    },
+    {
+      "epoch": 8,
+      "train": {
+        "loss": 0.588819934940729,
+        "accuracy": 0.9691342213114754,
+        "macro_f1": 0.9629031086785027
+      },
+      "val": {
+        "plantvillage": {
+          "loss": 0.5277389461852845,
+          "accuracy": 0.9923017705927637,
+          "macro_f1": 0.991015220594193
+        },
+        "plantdoc": {
+          "loss": 1.6426548446927751,
+          "accuracy": 0.5535714285714286,
+          "macro_f1": 0.5274990454947353
+        }
+      },
+      "selection_score": 0.7592571330444642
+    },
+    {
+      "epoch": 9,
+      "train": {
+        "loss": 0.5776159416456692,
+        "accuracy": 0.9735527663934426,
+        "macro_f1": 0.9675154857028531
+      },
+      "val": {
+        "plantvillage": {
+          "loss": 0.5289083971621166,
+          "accuracy": 0.9896073903002309,
+          "macro_f1": 0.9874300347101835
+        },
+        "plantdoc": {
+          "loss": 1.791828257696969,
+          "accuracy": 0.5535714285714286,
+          "macro_f1": 0.5251197785384321
+        }
+      },
+      "selection_score": 0.7562749066243077
+    },
+    {
+      "epoch": 10,
+      "train": {
+        "loss": 0.5778338066378578,
+        "accuracy": 0.972015881147541,
+        "macro_f1": 0.9659622146364658
+      },
+      "val": {
+        "plantvillage": {
+          "loss": 0.5291163235375108,
+          "accuracy": 0.9907621247113164,
+          "macro_f1": 0.9891219192726994
+        },
+        "plantdoc": {
+          "loss": 1.6814543519701277,
+          "accuracy": 0.5892857142857143,
+          "macro_f1": 0.5698143695107714
+        }
+      },
+      "selection_score": 0.7794681443917354
+    },
+    {
+      "epoch": 11,
+      "train": {
+        "loss": 0.5674778120439561,
+        "accuracy": 0.9788037909836066,
+        "macro_f1": 0.9744077882304426
+      },
+      "val": {
+        "plantvillage": {
+          "loss": 0.5228271633042474,
+          "accuracy": 0.9923017705927637,
+          "macro_f1": 0.9905864069899433
+        },
+        "plantdoc": {
+          "loss": 1.6937486444200789,
+          "accuracy": 0.5892857142857143,
+          "macro_f1": 0.574484039408894
+        }
+      },
+      "selection_score": 0.7825352231994187
+    },
+    {
+      "epoch": 12,
+      "train": {
+        "loss": 0.5622454332035096,
+        "accuracy": 0.9810450819672131,
+        "macro_f1": 0.9763405348944181
+      },
+      "val": {
+        "plantvillage": {
+          "loss": 0.5201607163912337,
+          "accuracy": 0.9934565050038491,
+          "macro_f1": 0.9907962564544508
+        },
+        "plantdoc": {
+          "loss": 1.7795084374291557,
+          "accuracy": 0.5625,
+          "macro_f1": 0.53828345567476
+        }
+      },
+      "selection_score": 0.7645398560646054
+    },
+    {
+      "epoch": 13,
+      "train": {
+        "loss": 0.5574330577596289,
+        "accuracy": 0.9826460040983607,
+        "macro_f1": 0.979312072001143
+      },
+      "val": {
+        "plantvillage": {
+          "loss": 0.5197900005539534,
+          "accuracy": 0.9946112394149346,
+          "macro_f1": 0.9922219774342675
+        },
+        "plantdoc": {
+          "loss": 1.7062838418143136,
+          "accuracy": 0.5982142857142857,
+          "macro_f1": 0.5807638368714954
+        }
+      },
+      "selection_score": 0.7864929071528814
+    },
+    {
+      "epoch": 14,
+      "train": {
+        "loss": 0.5521925753745877,
+        "accuracy": 0.9825179303278688,
+        "macro_f1": 0.9785211021184178
+      },
+      "val": {
+        "plantvillage": {
+          "loss": 0.5191606407536278,
+          "accuracy": 0.9946112394149346,
+          "macro_f1": 0.9928423062152871
+        },
+        "plantdoc": {
+          "loss": 1.7439769676753454,
+          "accuracy": 0.5892857142857143,
+          "macro_f1": 0.5631314258330388
+        }
+      },
+      "selection_score": 0.7779868660241629
+    },
+    {
+      "epoch": 15,
+      "train": {
+        "loss": 0.5502262286475448,
+        "accuracy": 0.9836705942622951,
+        "macro_f1": 0.9795469390253885
+      },
+      "val": {
+        "plantvillage": {
+          "loss": 0.5197600857673745,
+          "accuracy": 0.993841416474211,
+          "macro_f1": 0.9920761520733231
+        },
+        "plantdoc": {
+          "loss": 1.6781144823346819,
+          "accuracy": 0.5982142857142857,
+          "macro_f1": 0.5793561700269018
+        }
+      },
+      "selection_score": 0.7857161610501124
+    },
+    {
+      "epoch": 16,
+      "train": {
+        "loss": 0.5460076989209066,
+        "accuracy": 0.9864241803278688,
+        "macro_f1": 0.9826761574181127
+      },
+      "val": {
+        "plantvillage": {
+          "loss": 0.514743947725832,
+          "accuracy": 0.9957659738260201,
+          "macro_f1": 0.9944698566191192
+        },
+        "plantdoc": {
+          "loss": 1.752981185913086,
+          "accuracy": 0.5892857142857143,
+          "macro_f1": 0.555574665511233
+        }
+      },
+      "selection_score": 0.7750222610651761
+    },
+    {
+      "epoch": 17,
+      "train": {
+        "loss": 0.5474758368046557,
+        "accuracy": 0.9846951844262295,
+        "macro_f1": 0.9815366819986769
+      },
+      "val": {
+        "plantvillage": {
+          "loss": 0.5148637549431164,
+          "accuracy": 0.9965357967667436,
+          "macro_f1": 0.9945850246631487
+        },
+        "plantdoc": {
+          "loss": 1.6729315519332886,
+          "accuracy": 0.5892857142857143,
+          "macro_f1": 0.5651702926702926
+        }
+      },
+      "selection_score": 0.7798776586667207
+    },
+    {
+      "epoch": 18,
+      "train": {
+        "loss": 0.5461154753556017,
+        "accuracy": 0.9862320696721312,
+        "macro_f1": 0.9830775002286793
+      },
+      "val": {
+        "plantvillage": {
+          "loss": 0.5139795774859222,
+          "accuracy": 0.9965357967667436,
+          "macro_f1": 0.9953511847568727
+        },
+        "plantdoc": {
+          "loss": 1.6799500158854894,
+          "accuracy": 0.6071428571428571,
+          "macro_f1": 0.579827725291435
+        }
+      },
+      "selection_score": 0.7875894550241538
+    },
+    {
+      "epoch": 19,
+      "train": {
+        "loss": 0.5413394118430185,
+        "accuracy": 0.9874487704918032,
+        "macro_f1": 0.9848347760381684
+      },
+      "val": {
+        "plantvillage": {
+          "loss": 0.5143436198513539,
+          "accuracy": 0.9957659738260201,
+          "macro_f1": 0.9938195970825167
+        },
+        "plantdoc": {
+          "loss": 1.678188613482884,
+          "accuracy": 0.5982142857142857,
+          "macro_f1": 0.5777918977468866
+        }
+      },
+      "selection_score": 0.7858057474147015
+    },
+    {
+      "epoch": 20,
+      "train": {
+        "loss": 0.5396893368881257,
+        "accuracy": 0.9885373975409836,
+        "macro_f1": 0.9857252749425127
+      },
+      "val": {
+        "plantvillage": {
+          "loss": 0.5137304415420169,
+          "accuracy": 0.9961508852963818,
+          "macro_f1": 0.9940684818040004
+        },
+        "plantdoc": {
+          "loss": 1.678489089012146,
+          "accuracy": 0.5892857142857143,
+          "macro_f1": 0.5699876649426536
+        }
+      },
+      "selection_score": 0.782028073373327
+    }
+  ],
+  "data": {
+    "plantvillage_train": 12968,
+    "plantdoc_train": 446,
+    "plantvillage_val": 2598,
+    "plantdoc_val": 112
+  }
+}
