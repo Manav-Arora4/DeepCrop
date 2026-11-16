@@ -70,3 +70,7 @@ data/external/
 
 # CAD viewer meshes (regenerate: cad/field_unit.py then cad/pack_viewer.py)
 cad/out/viewer/
+
+# start.py / stop.py runtime files
+.run/
+logs/

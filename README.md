@@ -41,6 +41,15 @@
 
 ## 🚀 Quick Start
 
+**Already set up?** Start and stop the whole stack (Docker + Postgres, Ollama, backend, frontend) with one command each:
+
+```bash
+py start.py          # starts everything and opens http://localhost:5173/dashboard
+py stop.py           # stops backend, frontend and Postgres (add --all to also quit Ollama and Docker Desktop)
+```
+
+Server output goes to `logs/`. The steps below are the first-time setup.
+
 ### 1. Prerequisites
 - **Python 3.11+** with [uv](https://github.com/astral-sh/uv) or standard `pip`
 - **Node.js 20+** with [pnpm](https://pnpm.io) or `npm`
