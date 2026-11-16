@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-16T19:30:00+05:30",
+  "title": "Design System: DeepCrop",
+  "extensions": {
+    "colorMeta": {
+      "canvas": { "role": "neutral", "displayName": "Greenhouse Canvas" },
+      "card": { "role": "neutral", "displayName": "Card" },
+      "ink": { "role": "neutral", "displayName": "Ink" },
+      "muted": { "role": "neutral", "displayName": "Muted Text" },
+      "leaf": { "role": "primary", "displayName": "Leaf" },
+      "leaf-deep": { "role": "primary", "displayName": "Leaf Deep" },
+      "leaf-mint": { "role": "primary", "displayName": "Mint Field" },
+      "warn": { "role": "state", "displayName": "Warning" },
+      "alert": { "role": "state", "displayName": "Critical" }
+    },
+    "typographyMeta": {
+      "numeral-hero": { "displayName": "Hero Numeral", "purpose": "Risk score." },
+      "numeral": { "displayName": "Numeral", "purpose": "Condition tiles and chart headers." },
+      "card-title": { "displayName": "Card Title", "purpose": "One per card." }
+    },
+    "shadows": [
+      { "name": "card", "value": "0 1px 2px rgba(20,24,20,0.04), 0 8px 24px -12px rgba(20,24,20,0.12)", "purpose": "Cards and the active tab." },
+      { "name": "lift", "value": "0 2px 4px rgba(20,24,20,0.06), 0 16px 32px -16px rgba(20,24,20,0.22)", "purpose": "3D callouts over the model." }
+    ],
+    "motion": [
+      { "name": "ease-out-expo", "value": "cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "Gauge arc fill." },
+      { "name": "auto-rotate", "value": "OrbitControls.autoRotateSpeed 0.55", "purpose": "Field unit idle rotation; off under reduced motion." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" },
+      { "name": "xl", "value": "1280px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "One main action per card.",
+      "html": "<button class=\"ds-btn-primary\">Simulate reading</button>",
+      "css": ".ds-btn-primary{font:600 14px 'Hanken Grotesk Variable',system-ui,sans-serif;background:#141814;color:#FAFBF8;border:0;border-radius:12px;padding:10px 16px;cursor:pointer;transition:background .15s}.ds-btn-primary:hover{background:#2A302A}"
+    },
+    {
+      "name": "Quiet Button",
+      "kind": "button",
+      "refersTo": "button-quiet",
+      "description": "Secondary actions.",
+      "html": "<button class=\"ds-btn-quiet\">Scan a leaf</button>",
+      "css": ".ds-btn-quiet{font:600 14px 'Hanken Grotesk Variable',system-ui,sans-serif;background:#F1F3EE;color:#141814;border:0;border-radius:12px;padding:8px 14px;cursor:pointer}.ds-btn-quiet:hover{background:#DFE3DC}"
+    },
+    {
+      "name": "Status Chip",
+      "kind": "chip",
+      "refersTo": "chip",
+      "description": "Data source or model status, with a dot.",
+      "html": "<span class=\"ds-chip\"><i></i>Simulated</span>",
+      "css": ".ds-chip{display:inline-flex;align-items:center;gap:6px;font:600 12px 'Hanken Grotesk Variable',system-ui,sans-serif;background:#FBEFD9;color:#B26B00;border-radius:9999px;padding:4px 10px}.ds-chip i{width:6px;height:6px;border-radius:50%;background:#B26B00}"
+    },
+    {
+      "name": "Pill Tabs",
+      "kind": "nav",
+      "refersTo": "tab-track",
+      "description": "Top navigation.",
+      "html": "<nav class=\"ds-tabs\"><a class=\"on\">Overview</a><a>Sensors</a><a>Leaf scan</a></nav>",
+      "css": ".ds-tabs{display:inline-flex;gap:4px;background:#DFE3DC;border-radius:9999px;padding:4px;font:500 14px 'Hanken Grotesk Variable',system-ui,sans-serif}.ds-tabs a{padding:8px 16px;border-radius:9999px;color:#596158}.ds-tabs a.on{background:#FAFBF8;color:#141814;box-shadow:0 1px 2px rgba(20,24,20,.04),0 8px 24px -12px rgba(20,24,20,.12)}"
+    },
+    {
+      "name": "Condition Tile",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Large light numeral with unit and threshold state.",
+      "html": "<div class=\"ds-tile\"><p>Soil moisture</p><b>51.3<small>%</small></b><span>Optimal</span></div>",
+      "css": ".ds-tile{background:#F1F3EE;border-radius:12px;padding:12px 14px;font-family:'Hanken Grotesk Variable',system-ui,sans-serif}.ds-tile p{margin:0;font:500 13px inherit;color:#596158}.ds-tile b{display:block;margin-top:8px;font-weight:300;font-size:36px;letter-spacing:-.03em;color:#141814;font-variant-numeric:tabular-nums}.ds-tile small{font-size:16px;color:#596158;margin-left:2px}.ds-tile span{font:600 12px inherit;color:#13662F}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The readings live where the sensors are",
+    "overview": "A pale grey-green greenhouse canvas with near-white cards, large light numerals and leaf-green marks, built around the project's own field unit in 3D with live readings pinned to its sensors. Every number shows its provenance.",
+    "keyCharacteristics": ["3D field-unit hero with pinned callouts", "Light-weight tabular numerals", "Provenance chips on every reading and prediction", "Dot-matrix history and zoned risk scale"],
+    "rules": [
+      { "name": "The Provenance Rule", "body": "Every reading shows its data source and every prediction its model status; simulated and demo are amber, never hidden.", "section": "colors" },
+      { "name": "Green Marks, Ink Speaks", "body": "Text is ink or muted; green text only as leaf-deep for a positive state.", "section": "colors" }
+    ],
+    "dos": ["Show provenance on every reading and prediction.", "Use .num for every column of digits.", "Break chart lines across gaps longer than 5 minutes."],
+    "donts": ["Don't use faint for text or set data labels below 12px.", "Don't use emoji as icons.", "Don't add eyebrow labels above headings.", "Don't show a device, model or value the backend didn't return."]
+  }
+}

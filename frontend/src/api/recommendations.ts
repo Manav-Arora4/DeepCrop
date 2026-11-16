@@ -11,6 +11,11 @@ export async function predictDiseaseRisk(data: {
   return res.data
 }
 
+export async function getRiskHistory(plantId: string): Promise<DiseaseRiskPrediction[]> {
+  const res = await apiClient.get<DiseaseRiskPrediction[]>(`/disease-risk/history/${plantId}`)
+  return res.data
+}
+
 export async function generateRecommendation(data: {
   crop_id: string
   plant_id: string

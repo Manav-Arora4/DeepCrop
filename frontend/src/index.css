@@ -1,9 +1,59 @@
+@import '@fontsource-variable/hanken-grotesk';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
+  html {
+    background: theme('colors.canvas');
+  }
   body {
-    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    @apply bg-canvas text-ink font-sans antialiased;
+    font-feature-settings: 'ss01';
+  }
+  ::selection {
+    background: theme('colors.leaf.mint');
+    color: theme('colors.ink');
+  }
+  :focus-visible {
+    outline: 2px solid theme('colors.ink');
+    outline-offset: 2px;
+  }
+  input, select, textarea {
+    caret-color: theme('colors.leaf.deep');
+    accent-color: theme('colors.leaf.deep');
+  }
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: theme('colors.line') transparent;
+  }
+  h1, h2, h3 {
+    text-wrap: balance;
+  }
+}
+
+@layer components {
+  .card {
+    @apply bg-card rounded-card shadow-card;
+  }
+  .num {
+    font-variant-numeric: tabular-nums;
+  }
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-tile bg-ink px-4 py-2.5 text-sm font-semibold text-card transition-colors hover:bg-[#2A302A] disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-quiet {
+    @apply inline-flex items-center justify-center gap-2 rounded-tile bg-tile px-3.5 py-2 text-sm font-semibold text-ink transition-colors hover:bg-shell disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
   }
 }

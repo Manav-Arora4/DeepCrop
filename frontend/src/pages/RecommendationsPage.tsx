@@ -1,250 +1,181 @@
 import React, { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { generateRecommendation, predictDiseaseRisk, getRecommendationHistory } from '../api/recommendations'
+import { ChevronRight, FileText } from 'lucide-react'
+import clsx from 'clsx'
+import { generateRecommendation, getRecommendationHistory, getRiskHistory, predictDiseaseRisk } from '../api/recommendations'
 import { getLatestSensorReading } from '../api/sensors'
 import { getPlantCVHistory } from '../api/cv'
-import type { Recommendation, DiseaseRiskPrediction } from '../api/types'
-import { Sparkles, Brain, BookOpen, AlertCircle, ShieldAlert, CheckCircle2, FileText, ChevronRight } from 'lucide-react'
+import type { Recommendation } from '../api/types'
+import DataSourceBadge from '../components/badges/DataSourceBadge'
+import ModelStatusBadge from '../components/badges/ModelStatusBadge'
+import PageHeader from '../components/PageHeader'
+import { CROP_ID, PLANT_ID } from '../components/Layout'
 
-const PLANT_ID = 'plant_01'
-const CROP_ID = 'tomato'
+const URGENCY: Record<string, string> = {
+  low: 'bg-leaf-mint text-leaf-deep',
+  medium: 'bg-warn-field text-warn',
+  moderate: 'bg-warn-field text-warn',
+  high: 'bg-alert-field text-alert',
+  critical: 'bg-alert-field text-alert',
+}
 
-const URGENCY_STYLE = {
-  low: { badge: 'bg-emerald-50 text-emerald-700 border-emerald-300 ring-1 ring-emerald-500/20', border: 'border-emerald-200' },
-  medium: { badge: 'bg-amber-50 text-amber-700 border-amber-300 ring-1 ring-amber-500/20', border: 'border-amber-200' },
-  moderate: { badge: 'bg-amber-50 text-amber-700 border-amber-300 ring-1 ring-amber-500/20', border: 'border-amber-200' },
-  high: { badge: 'bg-orange-50 text-orange-700 border-orange-300 ring-1 ring-orange-500/20', border: 'border-orange-200' },
-  critical: { badge: 'bg-rose-50 text-rose-700 border-rose-300 ring-1 ring-rose-500/20', border: 'border-rose-200' },
+function Step({ title, children, empty }: { title: string; children?: React.ReactNode; empty: string }) {
+  return (
+    <div className="min-w-0 flex-1 rounded-tile bg-tile p-4">
+      <p className="text-xs font-medium text-muted">{title}</p>
+      <div className="mt-1.5">{children ?? <p className="text-sm text-muted">{empty}</p>}</div>
+    </div>
+  )
 }
 
 export default function RecommendationsPage() {
-  const [recommendation, setRecommendation] = useState<Recommendation | null>(null)
-  const [riskAssessment, setRiskAssessment] = useState<DiseaseRiskPrediction | null>(null)
   const qc = useQueryClient()
+  const [advice, setAdvice] = useState<Recommendation | null>(null)
 
-  // Fetch contextual telemetry and CV findings
-  const { data: latestSensor } = useQuery({
+  const { data: reading } = useQuery({
     queryKey: ['sensor-latest', PLANT_ID, CROP_ID],
     queryFn: () => getLatestSensorReading(PLANT_ID, CROP_ID),
+    retry: false,
   })
+  const { data: cvHistory } = useQuery({ queryKey: ['cv-history', PLANT_ID], queryFn: () => getPlantCVHistory(PLANT_ID), retry: false })
+  const { data: riskHistory } = useQuery({ queryKey: ['risk-history', PLANT_ID], queryFn: () => getRiskHistory(PLANT_ID), retry: false })
+  const { data: past } = useQuery({ queryKey: ['rec-history', PLANT_ID], queryFn: () => getRecommendationHistory(PLANT_ID), retry: false })
+  const cv = cvHistory?.[0]
+  const risk = riskHistory?.[0]
+  const shown = advice ?? past?.[0] ?? null
 
-  const { data: cvHistory } = useQuery({
-    queryKey: ['cv-history', PLANT_ID],
-    queryFn: () => getPlantCVHistory(PLANT_ID),
-  })
-  const latestCV = cvHistory && cvHistory.length > 0 ? cvHistory[0] : null
-
-  const { data: pastRecs, refetch: refetchRecHistory } = useQuery({
-    queryKey: ['rec-history', PLANT_ID],
-    queryFn: () => getRecommendationHistory(PLANT_ID),
-  })
-
-  // Multimodal Risk Assessment Mutation
-  const riskMutation = useMutation({
-    mutationFn: () => predictDiseaseRisk({
-      crop_id: CROP_ID,
-      plant_id: PLANT_ID,
-      sensor_reading_id: latestSensor?.id,
-      cv_prediction_id: latestCV?.id,
-    }),
-    onSuccess: (data) => setRiskAssessment(data),
-  })
-
-  // RAG Advisory Generation Mutation
-  const adviseMutation = useMutation({
+  const generate = useMutation({
     mutationFn: async () => {
-      // 1. Trigger risk model first if not done
-      let rId = riskAssessment?.id
-      if (!rId) {
-        const rRes = await predictDiseaseRisk({
-          crop_id: CROP_ID,
-          plant_id: PLANT_ID,
-          sensor_reading_id: latestSensor?.id,
-          cv_prediction_id: latestCV?.id,
-        })
-        setRiskAssessment(rRes)
-        rId = rRes.id
-      }
-
-      // 2. Generate grounded recommendation
+      const r = await predictDiseaseRisk({ crop_id: CROP_ID, plant_id: PLANT_ID, sensor_reading_id: reading?.id, cv_prediction_id: cv?.id })
       return generateRecommendation({
         crop_id: CROP_ID,
         plant_id: PLANT_ID,
-        sensor_reading_id: latestSensor?.id,
-        cv_prediction_id: latestCV?.id,
-        risk_prediction_id: rId,
+        sensor_reading_id: reading?.id,
+        cv_prediction_id: cv?.id,
+        risk_prediction_id: r.id,
       })
     },
     onSuccess: (data) => {
-      setRecommendation(data)
-      refetchRecHistory()
+      setAdvice(data)
+      qc.invalidateQueries({ queryKey: ['rec-history'] })
+      qc.invalidateQueries({ queryKey: ['risk-history'] })
     },
   })
 
   return (
-    <div className="max-w-7xl mx-auto space-y-8">
-      {/* Header */}
-      <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-2xl font-bold text-slate-900 tracking-tight">RAG + LLM Agronomic Advisory</h2>
-          <p className="text-sm text-slate-500 mt-0.5">
-            Knowledge-grounded agricultural decision support synthesized via Ollama & ChromaDB vector search.
+    <div className="flex flex-col gap-4">
+      <PageHeader
+        title="Advisor"
+        description="Advice written by the language model from the tomato knowledge base, grounded in this plant's actual readings, diagnosis and risk."
+        actions={
+          <button type="button" className="btn-primary" onClick={() => generate.mutate()} disabled={generate.isPending || (!reading && !cv)}>
+            {generate.isPending ? 'Writing advice…' : 'Generate advice'}
+          </button>
+        }
+      />
+
+      <section className="card p-5" aria-labelledby="inputs-title">
+        <h2 id="inputs-title" className="text-[19px] font-semibold tracking-display">What the advice is based on</h2>
+        <div className="mt-3 flex flex-col items-stretch gap-2 md:flex-row md:items-center">
+          <Step title="1 · Sensor reading" empty="No reading yet">
+            {reading && (
+              <>
+                <p className="num text-sm font-semibold">
+                  {reading.temperature?.toFixed(1) ?? '—'}°C · {reading.humidity?.toFixed(0) ?? '—'}% RH · soil {reading.moisture?.toFixed(1) ?? '—'}%
+                </p>
+                <div className="mt-2"><DataSourceBadge source={reading.data_source} /></div>
+              </>
+            )}
+          </Step>
+          <ChevronRight className="hidden shrink-0 text-faint md:block" size={18} aria-hidden="true" />
+          <Step title="2 · Leaf diagnosis" empty="No leaf scanned yet">
+            {cv && (
+              <>
+                <p className="text-sm font-semibold">
+                  {cv.disease} <span className="num font-normal text-muted">· {Math.round(cv.confidence * 100)}%</span>
+                </p>
+                <div className="mt-2"><ModelStatusBadge status={cv.model_status} /></div>
+              </>
+            )}
+          </Step>
+          <ChevronRight className="hidden shrink-0 text-faint md:block" size={18} aria-hidden="true" />
+          <Step title="3 · Disease risk" empty="Assessed when you generate advice">
+            {risk && (
+              <>
+                <p className="text-sm font-semibold capitalize">
+                  {risk.risk_level} <span className="num font-normal text-muted">· {Math.round(risk.risk_score * 100)}/100</span>
+                </p>
+                <div className="mt-2"><ModelStatusBadge status={risk.model_status} /></div>
+              </>
+            )}
+          </Step>
+        </div>
+        {!reading && !cv && <p className="mt-3 text-xs text-muted">Add a sensor reading or scan a leaf first; advice needs at least one.</p>}
+        {generate.isError && (
+          <p className="mt-3 text-xs text-alert">
+            Advice couldn't be generated. Check that Ollama is running (<code>ollama serve</code>) with the configured model pulled.
           </p>
-        </div>
+        )}
+      </section>
 
-        <button
-          onClick={() => adviseMutation.mutate()}
-          disabled={adviseMutation.isPending}
-          className="inline-flex items-center gap-2 px-5 py-3 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 disabled:opacity-50 transition-all shadow-md shadow-emerald-600/20"
-        >
-          {adviseMutation.isPending ? (
-            <>
-              <span className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-              Retrieving Agronomic Context & Generating...
-            </>
-          ) : (
-            <>
-              <Sparkles size={16} />
-              Generate Advisory Advisory
-            </>
-          )}
-        </button>
-      </div>
-
-      {/* Multimodal Input Context Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Sensor Condition Context */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-          <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Modality 1: IoT Sensors</span>
-          <div className="mt-3 space-y-1 text-xs">
-            {latestSensor ? (
-              <>
-                <p className="font-semibold text-slate-800">
-                  Moisture: {latestSensor.moisture}% • pH: {latestSensor.ph}
-                </p>
-                <p className="text-slate-500">
-                  Temp: {latestSensor.temperature}°C • Humidity: {latestSensor.humidity}%
-                </p>
-                <span className="inline-block mt-2 text-[10px] text-slate-400 font-mono">
-                  Reading ID: #{latestSensor.id} ({latestSensor.data_source})
-                </span>
-              </>
-            ) : (
-              <p className="text-slate-400 italic">No sensor telemetry attached</p>
-            )}
-          </div>
-        </div>
-
-        {/* CV Finding Context */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-          <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Modality 2: Computer Vision</span>
-          <div className="mt-3 space-y-1 text-xs">
-            {latestCV ? (
-              <>
-                <p className="font-bold text-slate-900">{latestCV.disease}</p>
-                <p className="text-slate-500">
-                  Confidence: {(latestCV.confidence * 100).toFixed(1)}% • Status: {latestCV.model_status}
-                </p>
-                <span className="inline-block mt-2 text-[10px] text-slate-400 font-mono">
-                  Prediction ID: #{latestCV.id}
-                </span>
-              </>
-            ) : (
-              <p className="text-slate-400 italic">No leaf imagery attached</p>
-            )}
-          </div>
-        </div>
-
-        {/* Multimodal Risk Score */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-          <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Multimodal Risk Assessment</span>
-          <div className="mt-3 space-y-1 text-xs">
-            {riskAssessment ? (
-              <>
-                <div className="flex items-center justify-between">
-                  <span className="font-bold text-slate-900 capitalize">Risk: {riskAssessment.risk_level}</span>
-                  <span className="font-extrabold text-slate-900">{(riskAssessment.risk_score * 100).toFixed(0)}%</span>
-                </div>
-                <p className="text-slate-500 text-[11px] truncate">
-                  {riskAssessment.contributing_factors.join(', ')}
-                </p>
-              </>
-            ) : (
-              <p className="text-slate-400 italic">Calculated during advisory generation</p>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Advisory Output Display */}
-      {recommendation ? (
-        <div className="bg-white rounded-2xl border border-slate-200 p-8 shadow-sm space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-5">
+      {shown ? (
+        <article className="card flex flex-col gap-5 p-6" aria-labelledby="advice-title">
+          <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Agronomic Advisory Document</span>
-              <h3 className="text-xl font-extrabold text-slate-900 mt-0.5">Crop Health Recommendation Plan</h3>
+              <h2 id="advice-title" className="text-[24px] font-semibold tracking-display">Recommendation</h2>
+              <p className="num text-xs text-muted">
+                {new Date(shown.timestamp).toLocaleString()} · {shown.llm_provider} ({shown.llm_model})
+              </p>
             </div>
-            <div className="flex items-center gap-2">
-              <span className={`text-xs px-3 py-1 rounded-full font-bold uppercase border ${
-                URGENCY_STYLE[recommendation.urgency as keyof typeof URGENCY_STYLE]?.badge || 'bg-slate-100'
-              }`}>
-                Urgency: {recommendation.urgency}
-              </span>
-            </div>
+            <span className={clsx('chip capitalize', URGENCY[shown.urgency] ?? 'bg-tile text-muted')}>{shown.urgency} urgency</span>
           </div>
 
-          {/* Situation Analysis / Raw Narrative */}
-          <div className="prose prose-slate max-w-none text-sm leading-relaxed text-slate-700 bg-slate-50/70 p-6 rounded-2xl border border-slate-100">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Agronomic Synthesis</h4>
-            <div className="whitespace-pre-wrap font-sans text-slate-800">{recommendation.summary}</div>
-          </div>
+          <p className="max-w-[72ch] whitespace-pre-wrap text-[15px] leading-relaxed text-ink">{shown.summary}</p>
 
-          {/* Action Checklist */}
-          {recommendation.recommended_actions && recommendation.recommended_actions.length > 0 && (
-            <div>
-              <h4 className="text-sm font-bold text-slate-900 mb-3 flex items-center gap-2">
-                <CheckCircle2 size={16} className="text-emerald-600" />
-                Actionable Next Steps
-              </h4>
-              <div className="grid grid-cols-1 gap-2.5">
-                {recommendation.recommended_actions.map((act, idx) => (
-                  <div key={idx} className="p-3.5 rounded-xl border border-slate-200 bg-white flex items-start gap-3 text-xs text-slate-800 font-medium">
-                    <span className="h-5 w-5 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center shrink-0 font-bold text-[11px]">
-                      {idx + 1}
-                    </span>
-                    <span className="mt-0.5">{act.replace(/^\d+\.\s*/, '')}</span>
-                  </div>
+          {shown.recommended_actions?.length > 0 && (
+            <section aria-labelledby="actions-title">
+              <h3 id="actions-title" className="text-[17px] font-semibold tracking-display">Next steps</h3>
+              <ol className="mt-2 flex flex-col gap-2">
+                {shown.recommended_actions.map((a, i) => (
+                  <li key={i} className="flex gap-3 rounded-tile bg-tile p-3 text-sm">
+                    <span className="num grid h-6 w-6 shrink-0 place-items-center rounded-full bg-ink text-xs font-semibold text-card">{i + 1}</span>
+                    <span className="pt-0.5">{a.replace(/^\d+\.\s*/, '')}</span>
+                  </li>
                 ))}
-              </div>
-            </div>
+              </ol>
+            </section>
           )}
 
-          {/* Grounding Attribution & Sources */}
-          {recommendation.sources && recommendation.sources.length > 0 && (
-            <div className="pt-4 border-t border-slate-100">
-              <h5 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                <BookOpen size={14} /> Grounding Knowledge Documents
-              </h5>
-              <div className="flex flex-wrap gap-2">
-                {recommendation.sources.map((s, idx) => (
-                  <span key={idx} className="px-3 py-1 rounded-lg bg-slate-100 text-slate-700 border border-slate-200 text-xs font-mono">
-                    📄 {s.title} (relevance: {(s.relevance * 100).toFixed(0)}%)
-                  </span>
-                ))}
-              </div>
-            </div>
+          {shown.prevention_steps?.length > 0 && (
+            <section aria-labelledby="prevention-title">
+              <h3 id="prevention-title" className="text-[17px] font-semibold tracking-display">Prevention</h3>
+              <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-ink marker:text-leaf">
+                {shown.prevention_steps.map((p, i) => <li key={i}>{p}</li>)}
+              </ul>
+            </section>
           )}
 
-          <div className="text-[11px] text-slate-400 font-mono">
-            Provider: {recommendation.llm_provider} ({recommendation.llm_model}) • Recorded: {new Date(recommendation.timestamp).toLocaleString()}
-          </div>
-        </div>
+          {shown.sources?.length > 0 && (
+            <section aria-labelledby="sources-title" className="border-t border-line pt-4">
+              <h3 id="sources-title" className="text-sm font-semibold">Sources retrieved from the knowledge base</h3>
+              <ul className="mt-2 flex flex-wrap gap-2">
+                {shown.sources.map((s, i) => (
+                  <li key={i} className="chip bg-tile font-medium text-ink">
+                    <FileText size={13} className="text-faint" aria-hidden="true" />
+                    {s.title}
+                    <span className="num text-muted">{Math.round(s.relevance * 100)}%</span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+        </article>
       ) : (
-        <div className="bg-white rounded-2xl border border-slate-200 p-16 text-center shadow-sm">
-          <Brain className="mx-auto text-slate-300 mb-3" size={44} />
-          <h4 className="text-base font-bold text-slate-800">No Advisory Generated Yet</h4>
-          <p className="text-xs text-slate-400 max-w-md mx-auto mt-1 mb-6">
-            Click "Generate Advisory Plan" above to trigger vector retrieval from the crop knowledge repository and synthesis by Ollama.
+        <div className="card p-10 text-center">
+          <p className="text-lg font-semibold">No advice yet</p>
+          <p className="mx-auto mt-1 max-w-md text-sm text-muted">
+            Press Generate advice. The system assesses risk, retrieves matching passages from the tomato knowledge base, and asks the
+            language model to explain them using only this plant's data.
           </p>
         </div>
       )}

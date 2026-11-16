@@ -7,26 +7,16 @@ interface Props {
 }
 
 const CONFIG = {
-  real: { label: 'Real ESP32 Hardware', className: 'bg-emerald-50 text-emerald-700 border-emerald-200 ring-1 ring-emerald-500/20' },
-  simulated: { label: 'Simulated Synthetic', className: 'bg-amber-50 text-amber-700 border-amber-200 ring-1 ring-amber-500/20' },
-  manual: { label: 'Manual Entry', className: 'bg-sky-50 text-sky-700 border-sky-200 ring-1 ring-sky-500/20' },
+  real: { label: 'Live ESP32', className: 'bg-leaf-mint text-leaf-deep', dot: 'bg-leaf' },
+  simulated: { label: 'Simulated', className: 'bg-warn-field text-warn', dot: 'bg-warn' },
+  manual: { label: 'Manual entry', className: 'bg-tile text-muted', dot: 'bg-faint' },
 }
 
 export default function DataSourceBadge({ source, className }: Props) {
-  const cfg = CONFIG[source as keyof typeof CONFIG] ?? {
-    label: source,
-    className: 'bg-slate-100 text-slate-700 border-slate-200',
-  }
-
+  const cfg = CONFIG[source as keyof typeof CONFIG] ?? { label: source, className: 'bg-tile text-muted', dot: 'bg-faint' }
   return (
-    <span
-      className={clsx(
-        'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold border transition-all',
-        cfg.className,
-        className
-      )}
-    >
-      <span className="h-1.5 w-1.5 rounded-full bg-current" />
+    <span className={clsx('chip', cfg.className, className)}>
+      <span className={clsx('h-1.5 w-1.5 rounded-full', cfg.dot)} />
       {cfg.label}
     </span>
   )

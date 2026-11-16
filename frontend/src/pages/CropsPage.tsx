@@ -1,137 +1,130 @@
 import React, { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { listCrops, getCropDetail } from '../api/crops'
-import type { CropDetail } from '../api/types'
-import { Layers, ShieldCheck, CheckCircle2, ChevronRight, BookOpen, AlertCircle } from 'lucide-react'
+import clsx from 'clsx'
+import { getCropDetail, listCrops } from '../api/crops'
+import PageHeader from '../components/PageHeader'
+
+const URGENCY: Record<string, string> = {
+  low: 'bg-tile text-muted',
+  medium: 'bg-warn-field text-warn',
+  high: 'bg-warn-field text-warn',
+  critical: 'bg-alert-field text-alert',
+}
 
 export default function CropsPage() {
-  const [selectedCrop, setSelectedCrop] = useState<string>('tomato')
-
-  const { data: crops, isLoading: loadingList } = useQuery({
-    queryKey: ['crops'],
-    queryFn: listCrops,
-  })
-
-  const { data: detail, isLoading: loadingDetail } = useQuery({
-    queryKey: ['crop-detail', selectedCrop],
-    queryFn: () => getCropDetail(selectedCrop),
-    enabled: !!selectedCrop,
+  const [selected, setSelected] = useState('tomato')
+  const { data: crops } = useQuery({ queryKey: ['crops'], queryFn: listCrops })
+  const { data: detail, isLoading } = useQuery({
+    queryKey: ['crop-detail', selected],
+    queryFn: () => getCropDetail(selected),
+    enabled: !!selected,
   })
 
   return (
-    <div className="max-w-7xl mx-auto space-y-8">
-      {/* Header */}
-      <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-        <h2 className="text-2xl font-bold text-slate-900 tracking-tight">Crop Modules Architecture</h2>
-        <p className="text-sm text-slate-500 mt-0.5">
-          Modular crop configuration repository. Additional crops can be installed without altering core system code.
-        </p>
-      </div>
+    <div className="flex flex-col gap-4">
+      <PageHeader
+        title="Crops"
+        description="Each crop is a module with its own disease classes, thresholds, model and knowledge base. Adding a crop doesn't change the core system."
+      />
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        {/* Crop Selector Column */}
-        <div className="lg:col-span-4 space-y-3">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 px-1">Registered Modules</h3>
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-[300px_minmax(0,1fr)]">
+        <nav aria-label="Crop modules" className="card flex flex-col gap-1.5 self-start p-2">
           {crops?.map((c) => (
             <button
               key={c.id}
-              onClick={() => setSelectedCrop(c.id)}
-              className={`w-full p-4 rounded-2xl border text-left transition-all flex items-center justify-between ${
-                selectedCrop === c.id
-                  ? 'border-emerald-500 bg-emerald-50/40 shadow-sm'
-                  : 'border-slate-200 bg-white hover:bg-slate-50'
-              }`}
+              type="button"
+              aria-current={selected === c.id}
+              onClick={() => setSelected(c.id)}
+              className={clsx(
+                'flex items-center justify-between gap-3 rounded-tile px-3.5 py-3 text-left transition-colors',
+                selected === c.id ? 'bg-tile' : 'hover:bg-tile/60'
+              )}
             >
-              <div>
-                <h4 className="font-bold text-slate-900 text-sm">{c.name}</h4>
-                <p className="text-xs text-slate-500 mt-0.5">v{c.version} • {c.growth_stages.length} growth stages</p>
-              </div>
-              <span className={`text-xs px-2.5 py-0.5 rounded-full font-semibold border ${
-                c.installed ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-slate-100 text-slate-500 border-slate-200'
-              }`}>
+              <span>
+                <span className="block font-semibold">{c.name}</span>
+                <span className="num block text-xs text-muted">v{c.version} · {c.growth_stages.length} growth stages</span>
+              </span>
+              <span className={clsx('chip', c.installed ? 'bg-leaf-mint text-leaf-deep' : 'bg-shell text-muted')}>
                 {c.installed ? 'Active' : 'Stub'}
               </span>
             </button>
           ))}
-        </div>
+        </nav>
 
-        {/* Selected Crop Details Column */}
-        <div className="lg:col-span-8 space-y-6">
-          {detail ? (
-            <div className="bg-white rounded-2xl border border-slate-200 p-8 shadow-sm space-y-8">
-              <div className="flex items-center justify-between border-b border-slate-100 pb-5">
-                <div>
-                  <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Module Specification</span>
-                  <h3 className="text-2xl font-extrabold text-slate-900 mt-0.5">{detail.name}</h3>
-                  <p className="text-xs text-slate-500 mt-1">{detail.description}</p>
-                </div>
-                <span className={`text-xs px-3 py-1 rounded-full font-bold uppercase border ${
-                  detail.installed ? 'bg-emerald-50 text-emerald-700 border-emerald-300' : 'bg-slate-100 text-slate-600'
-                }`}>
-                  Status: {detail.installed ? 'Installed' : 'Not Installed'}
+        {isLoading || !detail ? (
+          <div className="card h-72 animate-pulse" />
+        ) : (
+          <div className="flex flex-col gap-4">
+            <section className="card p-6" aria-labelledby="crop-title">
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <h2 id="crop-title" className="text-[28px] font-semibold tracking-display">{detail.name}</h2>
+                <span className={clsx('chip', detail.installed ? 'bg-leaf-mint text-leaf-deep' : 'bg-shell text-muted')}>
+                  {detail.installed ? 'Installed' : 'Not installed'}
                 </span>
               </div>
+              <p className="mt-1 max-w-[72ch] text-sm text-muted">{detail.description}</p>
+              <p className="mt-3 text-xs text-muted">Growth stages: {detail.growth_stages.join(' → ').replace(/_/g, ' ')}</p>
+            </section>
 
-              {/* Threshold Specification Grid */}
-              {detail.thresholds && (
-                <div>
-                  <h4 className="text-sm font-bold text-slate-900 mb-3">Evidence-Based Agronomic Thresholds</h4>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {Object.entries(detail.thresholds).map(([key, val]: [string, any]) => {
-                      if (typeof val !== 'object' || !val.optimal_min) return null
-                      return (
-                        <div key={key} className="p-4 rounded-xl border border-slate-100 bg-slate-50/50 space-y-1 text-xs">
-                          <div className="flex items-center justify-between">
-                            <span className="font-bold capitalize text-slate-800">{key}</span>
-                            <span className="font-mono font-bold text-emerald-700">
-                              {val.optimal_min} - {val.optimal_max} {val.unit}
-                            </span>
-                          </div>
-                          <p className="text-[11px] text-slate-500 leading-relaxed">{val.notes}</p>
-                        </div>
-                      )
-                    })}
-                  </div>
-                </div>
-              )}
-
-              {/* Disease Classes Table */}
-              {detail.disease_classes && (
-                <div>
-                  <h4 className="text-sm font-bold text-slate-900 mb-3">
-                    Supported Disease Diagnostics ({detail.disease_classes.length} Classes)
-                  </h4>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                    {detail.disease_classes.map((cls) => (
-                      <div key={cls.id} className="p-3 rounded-xl border border-slate-100 bg-slate-50/50 flex items-center justify-between text-xs">
-                        <div className="flex items-center gap-2">
-                          <span>{cls.is_healthy ? '✅' : '🔴'}</span>
-                          <div>
-                            <span className="font-bold text-slate-800">{cls.display}</span>
-                            {cls.causative_agent && (
-                              <p className="text-[10px] text-slate-400 italic">{cls.causative_agent}</p>
-                            )}
-                          </div>
-                        </div>
-                        {!cls.is_healthy && (
-                          <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase ${
-                            cls.treatment_urgency === 'critical' ? 'bg-rose-100 text-rose-800' :
-                            cls.treatment_urgency === 'high' ? 'bg-orange-100 text-orange-800' :
-                            'bg-amber-100 text-amber-800'
-                          }`}>
-                            {cls.treatment_urgency}
+            {detail.thresholds && (
+              <section className="card p-6" aria-labelledby="thresholds-title">
+                <h2 id="thresholds-title" className="text-[19px] font-semibold tracking-display">Optimal ranges</h2>
+                <dl className="mt-3 grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+                  {Object.entries(detail.thresholds).map(([key, v]) =>
+                    typeof v === 'object' && v.optimal_min != null ? (
+                      <div key={key} className="rounded-tile bg-tile p-4">
+                        <dt className="flex items-baseline justify-between gap-3">
+                          <span className="font-semibold capitalize">{key}</span>
+                          <span className="num text-sm font-semibold text-leaf-deep">
+                            {v.optimal_min}–{v.optimal_max} {v.unit}
                           </span>
-                        )}
+                        </dt>
+                        {v.notes && <dd className="mt-1 text-xs text-muted">{v.notes}</dd>}
                       </div>
-                    ))}
-                  </div>
+                    ) : null
+                  )}
+                </dl>
+              </section>
+            )}
+
+            {detail.disease_classes && (
+              <section className="card p-6" aria-labelledby="classes-title">
+                <h2 id="classes-title" className="text-[19px] font-semibold tracking-display">
+                  Disease classes <span className="num font-normal text-muted">({detail.disease_classes.length})</span>
+                </h2>
+                <div className="mt-3 overflow-x-auto">
+                  <table className="w-full min-w-[520px] text-left text-sm">
+                    <thead>
+                      <tr className="text-xs text-muted">
+                        <th className="pb-2 font-medium">Class</th>
+                        <th className="pb-2 font-medium">Cause</th>
+                        <th className="pb-2 text-right font-medium">Treatment urgency</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {detail.disease_classes.map((c) => (
+                        <tr key={c.id} className="border-t border-line">
+                          <td className="py-2.5 font-semibold">
+                            <span className={clsx('mr-2 inline-block h-2 w-2 rounded-full', c.is_healthy ? 'bg-leaf' : 'bg-ink')} aria-hidden="true" />
+                            {c.display}
+                          </td>
+                          <td className="py-2.5 italic text-muted">{c.causative_agent ?? (c.is_healthy ? '—' : c.pathogen_type)}</td>
+                          <td className="py-2.5 text-right">
+                            {c.is_healthy ? (
+                              <span className="text-xs text-muted">—</span>
+                            ) : (
+                              <span className={clsx('chip capitalize', URGENCY[c.treatment_urgency] ?? 'bg-tile text-muted')}>{c.treatment_urgency}</span>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
-              )}
-            </div>
-          ) : (
-            <div className="h-64 rounded-2xl bg-slate-100 animate-pulse" />
-          )}
-        </div>
+              </section>
+            )}
+          </div>
+        )}
       </div>
     </div>
   )
