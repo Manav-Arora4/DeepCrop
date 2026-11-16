@@ -13,10 +13,5 @@
     {"id": "maturity", "name": "Maturity", "typical_days": "90-120"}
   ],
   "typical_yield_kg_per_plant": {"min": 4.0, "max": 7.0},
-  "cv_model": {
-    "path": "crops/tomato/models/cv/efficientnet_tomato_v2.pth",
-    "version": "tomato_cv_v2.0",
-    "architecture": "efficientnet_b0"
-  },
   "origin": "South America"
 }

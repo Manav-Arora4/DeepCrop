@@ -55,18 +55,25 @@ cp .env.example .env
 # Start PostgreSQL via Docker Compose
 docker compose up postgres -d
 
-# Start backend using uv
-cd backend
-uv sync
-uv run uvicorn backend.main:app --host 0.0.0.0 --port 8000 --reload
+# Install backend dependencies into the repo venv (first time only).
+# For GPU inference, install CUDA PyTorch first: see ml/cv/requirements.txt
+py -3.12 -m venv .venv
+.venv/Scripts/python -m pip install -e "./backend[dev]"
+
+# Start the backend FROM THE REPO ROOT (it imports itself as the `backend` package)
+.venv/Scripts/python -m uvicorn backend.main:app --host 127.0.0.1 --port 8000 --reload
+
+# Run the backend tests
+.venv/Scripts/python -m pytest backend/tests -q
 ```
 
 ### 4. Start Frontend
 ```bash
 cd frontend
-pnpm install
-pnpm dev
+npm install
+npm run dev
 ```
+Open http://localhost:5173. The dev server forwards `/api` calls to the backend on port 8000.
 
 ### 5. Local LLM Setup
 Ensure Ollama is running and download the model:

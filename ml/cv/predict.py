@@ -29,8 +29,8 @@ def main():
     with open(classes_file) as f:
         classes = json.load(f).get("classes", [])
 
-    # The active model is whatever crop.json's cv_model points to (same as the backend)
-    cv_cfg = json.loads(Path(f"crops/{args.crop}/config/crop.json").read_text()).get("cv_model", {})
+    # The active model is whatever metadata/module.json's cv_model points to (same as the backend)
+    cv_cfg = json.loads(Path(f"crops/{args.crop}/metadata/module.json").read_text()).get("cv_model", {})
     model_pth = Path(cv_cfg.get("path", f"crops/{args.crop}/models/cv/efficientnet_{args.crop}_v1.pth"))
     version = cv_cfg.get("version", "v1.0")
     if model_pth.exists():

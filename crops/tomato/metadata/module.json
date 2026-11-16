@@ -6,11 +6,12 @@
   "status": "installed",
   "growth_stages": ["seedling", "vegetative", "flowering", "fruit_development", "maturity"],
   "cv_model": {
-    "path": "crops/tomato/models/cv/efficientnet_tomato_v1.pth",
+    "path": "crops/tomato/models/cv/efficientnet_tomato_v2.pth",
     "architecture": "efficientnet_b0",
-    "version": "0.1.0",
-    "status": "unavailable",
-    "num_classes": 10
+    "version": "tomato_cv_v2.0",
+    "status": "ready",
+    "num_classes": 10,
+    "model_card": "crops/tomato/models/cv/model_card_v2.json"
   },
   "disease_risk_model": {
     "path": "crops/tomato/models/disease_risk/rf_tomato_v1.pkl",

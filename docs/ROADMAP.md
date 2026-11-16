@@ -3,7 +3,7 @@
 Status of each phase from the project plan, checked against what is actually in the repository.
 
 **Last reviewed:** 2026-11-16
-**Current position:** Phase 3 v2 is in use: 99.5% on PlantVillage, 63.3% on real-world PlantDoc photos (v1 got 27.1%). Next: the Phase 1 run check, then Phase 4 hardware.
+**Current position:** Phase 1 run check passed and Phase 3 v2 is in use (99.5% PlantVillage, 63.3% real-world PlantDoc). Next: Phase 6 on real data from the professor (format in `docs/DATA_COLLECTION.md`) and Phase 4 hardware.
 
 Status key: ✅ done · 🟡 partly done / code written but not verified · ⬜ not started
 
@@ -21,20 +21,24 @@ Status key: ✅ done · 🟡 partly done / code written but not verified · ⬜ 
 
 ---
 
-## Phase 1 — Core Architecture 🟡
+## Phase 1 — Core Architecture ✅ (run check done 2026-11-16)
 
 | Item | Status |
 |---|---|
-| Repository, `.env.example`, Docker Compose | ✅ |
-| FastAPI backend: routes for crops, plants, devices, sensors, CV, risk, RAG, recommendations | 🟡 written, not run end-to-end |
-| SQLAlchemy models + Pydantic schemas | 🟡 |
-| Crop Manager + crop module registry (`crops/`), Tomato + Onion stub | 🟡 |
-| React + Vite dashboard pages (Dashboard, Sensors, CV, Recommendations, Crops) | 🟡 |
-| LLM provider abstraction (Ollama, DeepSeek) | 🟡 |
-| Alembic migrations (mentioned in README) | ⬜ missing |
-| `docs/` folder | ✅ this file |
+| Repository, `.env.example`, Docker Compose | ✅ Postgres starts with `docker compose up postgres -d` |
+| FastAPI backend | ✅ Starts against Postgres, finds both crop modules, `/health` OK |
+| Backend tests | ✅ 9 passed. A wrong sensor test was fixed: impossible values are rejected by the schema, and the service catches implausible ones |
+| CV endpoint | ✅ `/cv/predict` serves `tomato_cv_v2.0` (read from `crops/tomato/metadata/module.json`) with a low-confidence warning |
+| React + Vite dashboard | ✅ Loads, connects to the API, and shows simulated sensor data tagged "Simulated" |
+| LLM provider abstraction (Ollama, DeepSeek) | 🟡 Not exercised yet (Phase 8) |
+| Alembic migrations (mentioned in README) | ⬜ Missing; tables are created on startup |
 
-**Done when:** `docker compose up` starts Postgres, the backend starts, the backend tests pass, and the dashboard loads and shows simulated sensor data.
+Fixed during the check:
+- **README start command.** The README started the backend from inside `backend/`, which can't import itself. It now starts from the repo root.
+- **Backend install.** `pip install -e ./backend[dev]` failed, because hatchling couldn't find the package files. It now installs the dependencies only.
+- **Model registry.** The backend reads the model from `metadata/module.json`, not `crop.json`, so it was still serving v1 with version `0.1.0`. `module.json` is now the single place that names the active model.
+
+**Done when:** `docker compose up` starts Postgres, the backend starts, the backend tests pass, and the dashboard loads and shows simulated sensor data. ✅
 
 ## Phase 2 — Dataset Setup ✅
 

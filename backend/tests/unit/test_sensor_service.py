@@ -1,4 +1,5 @@
 import pytest
+from pydantic import ValidationError
 from backend.services.sensor_service import SensorService
 from backend.schemas.sensor import SensorReadingCreate
 from backend.models.sensor_reading import SensorReading
@@ -21,16 +22,35 @@ async def test_sensor_validation():
     assert is_valid is True
     assert notes is None
 
-    invalid_reading = SensorReadingCreate(
+    # Impossible values are rejected by the request schema before reaching the service
+    with pytest.raises(ValidationError):
+        SensorReadingCreate(
+            device_id="esp_01",
+            crop_id="tomato",
+            plant_id="plant_01",
+            moisture=120.0,
+            ph=-1.0,
+            temperature=150.0,
+            humidity=150.0,
+        )
+
+    # The service is a second check: 90 °C passes the schema (<= 100) but isn't plausible
+    hot_reading = SensorReadingCreate(
         device_id="esp_01",
         crop_id="tomato",
         plant_id="plant_01",
-        moisture=120.0,  # Impossible
-        ph=-1.0,        # Impossible
-        temperature=150.0,
-        humidity=150.0,
+        temperature=90.0,
     )
-    is_valid, notes = service.validate_reading(invalid_reading)
+    is_valid, notes = service.validate_reading(hot_reading)
+    assert is_valid is False
+    assert "Temperature" in notes
+
+    # Readings built without schema validation are still caught by the service
+    unchecked = SensorReadingCreate.model_construct(
+        device_id="esp_01", crop_id="tomato", plant_id="plant_01",
+        moisture=120.0, ph=-1.0, temperature=None, humidity=None,
+    )
+    is_valid, notes = service.validate_reading(unchecked)
     assert is_valid is False
     assert "Moisture" in notes
     assert "pH" in notes
