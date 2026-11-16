@@ -1,6 +1,45 @@
+import re
 from pathlib import Path
 from typing import List, Dict, Any
 from backend.core.config import get_settings
+
+
+def split_knowledge(crop_id: str, knowledge_dir: Path) -> list:
+    """
+    Split each Markdown doc into one chunk per `## ` section, prefixed with the doc title so the
+    chunk is self-describing. The `## Sources` section is not embedded; its references are stored
+    in every chunk's metadata so answers can cite them.
+    """
+    from langchain_core.documents import Document
+
+    chunks = []
+    for path in sorted(knowledge_dir.rglob("*.md")):
+        text = path.read_text(encoding="utf-8")
+        title = next((l[2:].strip() for l in text.splitlines() if l.startswith("# ")), path.stem)
+        parts = re.split(r"\n(?=## )", text)
+        refs = ""
+        sections = []
+        for part in parts[1:]:
+            heading = part.splitlines()[0][3:].strip()
+            body = part.split("\n", 1)[1].strip() if "\n" in part else ""
+            if heading.lower() == "sources":
+                refs = "\n".join(l[2:].strip() for l in body.splitlines() if l.startswith("- "))
+            else:
+                sections.append((heading, body))
+        rel = path.relative_to(knowledge_dir).as_posix()
+        doc_id = rel[:-3]
+        topic = rel.split("/")[0] if "/" in rel else path.stem
+        disease = path.stem if rel.startswith("diseases/") else ""
+        for i, (heading, body) in enumerate(sections):
+            chunks.append(Document(
+                page_content=f"{title} — {heading}\n\n{body}",
+                metadata={
+                    "crop": crop_id, "doc": doc_id, "title": title, "section": heading,
+                    "topic": topic, "disease": disease, "references": refs,
+                    "chunk_id": f"{doc_id}#{i}", "source": str(path),
+                },
+            ))
+    return chunks
 
 
 class RAGService:
@@ -42,38 +81,22 @@ class RAGService:
         return vectorstore
 
     async def ingest_crop_knowledge(self, crop_id: str, knowledge_dir: str | Path, force: bool = False) -> int:
-        """Ingest all Markdown knowledge documents for a crop into ChromaDB."""
+        """Ingest a crop's Markdown knowledge base into ChromaDB, one chunk per `## ` section."""
         k_path = Path(knowledge_dir)
         if not k_path.exists():
             return 0
 
         vectorstore = self._get_vectorstore(crop_id)
-        if not force:
-            count = vectorstore._collection.count()
-            if count > 0:
-                return count
+        count = vectorstore._collection.count()
+        if count > 0 and not force:
+            return count
+        if count > 0:
+            vectorstore.delete(ids=vectorstore.get()["ids"])
 
-        from langchain_community.document_loaders import DirectoryLoader, TextLoader
-        from langchain.text_splitter import RecursiveCharacterTextSplitter
-
-        loader = DirectoryLoader(
-            str(k_path),
-            glob="**/*.md",
-            loader_cls=TextLoader,
-            loader_kwargs={"encoding": "utf-8"},
-        )
-        docs = loader.load()
-        if not docs:
+        chunks = split_knowledge(crop_id, k_path)
+        if not chunks:
             return 0
-
-        splitter = RecursiveCharacterTextSplitter(chunk_size=512, chunk_overlap=64)
-        chunks = splitter.split_documents(docs)
-
-        # Inject crop_id into metadata
-        for chunk in chunks:
-            chunk.metadata["crop"] = crop_id
-
-        vectorstore.add_documents(chunks)
+        vectorstore.add_documents(chunks, ids=[c.metadata["chunk_id"] for c in chunks])
         return len(chunks)
 
     async def retrieve(self, crop_id: str, query: str, k: int = 4) -> List[Dict[str, Any]]:
@@ -87,7 +110,9 @@ class RAGService:
                     "content": doc.page_content,
                     "metadata": doc.metadata,
                     "relevance": round(float(score), 3),
-                    "source": Path(doc.metadata.get("source", "knowledge")).name,
+                    "source": doc.metadata.get("doc", Path(doc.metadata.get("source", "knowledge")).name),
+                    "chunk_id": doc.metadata.get("chunk_id"),
+                    "references": [r for r in doc.metadata.get("references", "").split("\n") if r],
                 })
             return results
         except Exception as e:

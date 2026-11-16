@@ -9,6 +9,7 @@ interface Props {
 const CONFIG = {
   ready: { label: 'Trained model', className: 'bg-leaf-mint text-leaf-deep', dot: 'bg-leaf' },
   demo: { label: 'Demo model', className: 'bg-warn-field text-warn', dot: 'bg-warn' },
+  provisional: { label: 'Provisional weights', className: 'bg-warn-field text-warn', dot: 'bg-warn' },
   unavailable: { label: 'Model missing', className: 'bg-tile text-muted', dot: 'bg-faint' },
   error: { label: 'Inference error', className: 'bg-alert-field text-alert', dot: 'bg-alert' },
 }

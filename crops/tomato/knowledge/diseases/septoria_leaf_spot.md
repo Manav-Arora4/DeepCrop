@@ -24,3 +24,9 @@
 2. **Bottom Pruning**: Prune the lowest 30–45 cm of leaves once the canopy is established to eliminate the initial splash zone.
 3. **Crop Rotation**: Minimum 2-year rotation away from tomato, eggplant, and potato.
 4. **Fungicides**: Chlorothalonil, Mancozeb, Copper hydroxide, or Pyraclostrobin applied preventatively when lower leaves are scouted positive.
+
+## Sources
+- University of Minnesota Extension, *Tomato leaf spot diseases*: https://extension.umn.edu/disease-management/tomato-leaf-spot-diseases
+- UConn IPM, *Early Blight Management in Fresh Market Tomatoes*: https://ipm.cahnr.uconn.edu/early-blight-management-in-fresh-market-tomatoes/
+
+Product names are examples only. Follow the product label and local extension advice for rates and timing.

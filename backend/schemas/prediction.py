@@ -1,5 +1,5 @@
 from pydantic import BaseModel, ConfigDict, Field
-from typing import Optional, List, Dict, Literal
+from typing import Any, Dict, List, Literal, Optional
 from datetime import datetime
 
 
@@ -34,7 +34,8 @@ class DiseaseRiskResponse(BaseModel):
     risk_level: Literal["low", "moderate", "high", "critical", "unknown"]
     contributing_factors: List[str]
     model_version: str
-    model_status: Literal["ready", "demo"]
+    model_status: Literal["ready", "demo", "provisional"]
+    components: Optional[Dict[str, Any]] = None  # per-scorer breakdown of a fused score
     timestamp: datetime
 
     model_config = ConfigDict(from_attributes=True)

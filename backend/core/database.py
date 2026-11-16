@@ -53,6 +53,15 @@ async def init_db():
         import backend.models.recommendation  # noqa: F401
 
         await conn.run_sync(Base.metadata.create_all)
+        # No migrations yet: add columns introduced after a table was first created
+        await conn.run_sync(_add_missing_columns)
+
+
+def _add_missing_columns(sync_conn):
+    from sqlalchemy import inspect, text
+    cols = {c["name"] for c in inspect(sync_conn).get_columns("disease_risk_predictions")}
+    if "components" not in cols:
+        sync_conn.execute(text("ALTER TABLE disease_risk_predictions ADD COLUMN components JSON"))
 
 
 async def get_db() -> AsyncSession:

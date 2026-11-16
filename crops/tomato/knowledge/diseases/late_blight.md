@@ -33,3 +33,8 @@ Late blight is caused by the oomycete *Phytophthora infestans*, historically fam
 
 ## 5. Monitoring & Forecasting
 Monitor local agricultural extension Late Blight alerts (such as USAblight or Blightwatch). When favorable cool, damp conditions are forecast, implement protective sprays on a tight 5-day cycle.
+
+## Sources
+- UC IPM, *Tomato: Late Blight* (Pest Management Guidelines): https://ipm.ucanr.edu/agriculture/tomato/late-blight/
+
+Product names are examples only. Follow the product label and local extension advice for rates and timing.

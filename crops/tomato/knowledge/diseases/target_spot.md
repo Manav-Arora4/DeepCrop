@@ -23,3 +23,9 @@
 1. **Air Circulation**: Stake and prune to open the lower canopy.
 2. **Debris Destruction**: Thoroughly bury or remove crop residue immediately post-harvest.
 3. **Fungicides**: Pyraclostrobin, Fluxapyroxad, Boscalid, Chlorothalonil, or Famoxadone + Cymoxanil. Ensure sprays penetrate deep into the lower interior canopy.
+
+## Sources
+- UF/IFAS IPM Florida, *Target Spot*: https://ipm.ifas.ufl.edu/pdfs/Target_Spot.pdf
+- MacKenzie, Chitwood, Vallad & Hutton (2019), *Target Spot of Tomato in Florida*, UF/IFAS EDIS PP351: https://edis.ifas.ufl.edu/publication/PP351
+
+Product names are examples only. Follow the product label and local extension advice for rates and timing.

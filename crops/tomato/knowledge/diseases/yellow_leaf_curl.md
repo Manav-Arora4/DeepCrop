@@ -28,3 +28,9 @@ TYLCV is a circular single-stranded DNA plant begomovirus. It is **not** seed-tr
    - Systemic neonicotinoids (Imidacloprid, Thiamethoxam) at transplant or via drip chemigation.
    - Diamides (Cyantraniliprole) or insect growth regulators (Pyriproxyfen, Buprofezin).
 4. **Sanitation & Rogueing**: Immediately rogue (uproot and bag) symptomatic infected plants to prevent them serving as virus reservoirs.
+
+## Sources
+- UF/IFAS, *Tomato Yellow Leaf Curl Virus Management for Homeowners*: https://ipm.ifas.ufl.edu/agricultural_ipm/tylcv_home_mgmt.shtml
+- UF/IFAS IPM Florida, *Whitefly management*: https://ipm.ifas.ufl.edu/pdfs/Whitefly_Mgmt.pdf
+
+Product names are examples only. Follow the product label and local extension advice for rates and timing.

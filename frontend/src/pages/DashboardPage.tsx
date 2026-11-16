@@ -296,6 +296,35 @@ function RiskScale({ score }: { score?: number }) {
   )
 }
 
+const SCORERS = [
+  { key: 'photo', label: 'Leaf photo' },
+  { key: 'sensor', label: 'Sensors' },
+  { key: 'rag', label: 'Knowledge + LLM' },
+] as const
+
+// Per-scorer rows: each scorer's own 0–100 score and the weight it got in the blend
+function ScorerBreakdown({ components }: { components: NonNullable<DiseaseRiskPrediction['components']> }) {
+  return (
+    <ul className="flex flex-col gap-1.5" aria-label="How the risk score was combined">
+      {SCORERS.map(({ key, label }) => {
+        const s = components.scores?.[key]
+        const w = components.weights?.[key]
+        return (
+          <li key={key} className="grid grid-cols-[110px_minmax(0,1fr)_auto] items-center gap-2 text-xs">
+            <span className={clsx('font-medium', s == null ? 'text-muted' : 'text-ink')}>{label}</span>
+            <span className="h-1.5 overflow-hidden rounded-full bg-tile">
+              {s != null && <span className="block h-full rounded-full bg-ink" style={{ width: `${Math.round(s * 100)}%` }} />}
+            </span>
+            <span className="num w-[86px] text-right text-muted">
+              {s == null ? 'not used' : `${Math.round(s * 100)} · w ${w?.toFixed(2)}`}
+            </span>
+          </li>
+        )
+      })}
+    </ul>
+  )
+}
+
 function zoneFor(score: number) {
   return RISK_ZONES.find((z) => score < z.to) ?? RISK_ZONES[3]
 }
@@ -320,10 +349,12 @@ function RiskCard({ reading, cv, risk }: { reading?: SensorReading; cv?: CVPredi
           <p className={clsx('mt-2 text-sm font-semibold', score != null ? zoneFor(score).text : 'text-ink')}>
             {risk ? RISK_TEXT[risk.risk_level] : 'Not assessed yet'}
           </p>
-          <p className="mt-1 text-xs text-muted">Combines the latest sensor reading and leaf diagnosis</p>
+          <p className="mt-1 text-xs text-muted">Weighted blend of the leaf photo, the sensors and the knowledge base</p>
         </div>
       </div>
-      {risk?.contributing_factors?.length ? (
+      {risk?.components?.scores ? (
+        <ScorerBreakdown components={risk.components} />
+      ) : risk?.contributing_factors?.length ? (
         <ul className="flex flex-wrap gap-1.5">
           {risk.contributing_factors.slice(0, 4).map((f) => (
             <li key={f} className="chip bg-tile text-muted">{f}</li>

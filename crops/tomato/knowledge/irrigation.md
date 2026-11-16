@@ -39,3 +39,8 @@ Volumetric Water Content (VWC %) measured by capacitive soil moisture probes:
 Optimal range: **6.0 to 6.8**
 - **pH < 5.5 (Acidic)**: Aluminum and manganese toxicity risk; phosphorus and calcium binding.
 - **pH > 7.2 (Alkaline)**: Severe micronutrient lockout (Iron, Zinc, Manganese chlorosis).
+
+## Sources
+- Allen et al. (1998), *Crop evapotranspiration*, FAO Irrigation and Drainage Paper 56, Chapter 6: https://www.fao.org/4/x0490e/x0490e0b.htm
+- FAO Land & Water, *Crop information: Tomato* (based on Doorenbos & Kassam, FAO Irrigation and Drainage Paper 33, 1979)
+- University of Georgia Extension, *Troubleshooting Cultural Problems in Tomatoes* (Circular 1089): https://fieldreport.caes.uga.edu/publications/C1089/troubleshooting-cultural-problems-in-tomatoes/

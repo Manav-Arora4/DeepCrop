@@ -20,6 +20,7 @@ class DiseaseRiskPrediction(Base):
     sensor_reading_id: Mapped[int | None] = mapped_column(ForeignKey("sensor_readings.id"), nullable=True)
 
     model_version: Mapped[str] = mapped_column(String(64), nullable=False)
-    model_status: Mapped[str] = mapped_column(String(32), nullable=False)  # "ready"|"demo"
+    model_status: Mapped[str] = mapped_column(String(32), nullable=False)  # "ready"|"demo"|"provisional"
     feature_importances: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    components: Mapped[dict | None] = mapped_column(JSON, nullable=True)  # fused score breakdown per scorer
     timestamp: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), index=True)

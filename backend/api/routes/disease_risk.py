@@ -6,7 +6,7 @@ from sqlalchemy import select
 from backend.schemas.prediction import DiseaseRiskRequest, DiseaseRiskResponse
 from backend.models.disease_risk_prediction import DiseaseRiskPrediction
 from backend.api.deps import get_session, get_crop_manager
-from backend.services.disease_risk_service import DiseaseRiskService
+from backend.services.disease_risk_service import DiseaseRiskService, to_response
 from backend.services.crop_manager import CropManager
 
 router = APIRouter(prefix="/disease-risk", tags=["Multimodal Disease Risk"])
@@ -37,17 +37,4 @@ async def get_risk_history(plant_id: str, db: AsyncSession = Depends(get_session
         .order_by(DiseaseRiskPrediction.timestamp.desc())
     )
     records = res.scalars().all()
-    return [
-        DiseaseRiskResponse(
-            id=r.id,
-            crop_id=r.crop_id,
-            plant_id=r.plant_id,
-            risk_score=r.risk_score,
-            risk_level=r.risk_level,
-            contributing_factors=r.contributing_factors,
-            model_version=r.model_version,
-            model_status=r.model_status,
-            timestamp=r.timestamp,
-        )
-        for r in records
-    ]
+    return [to_response(r) for r in records]

@@ -48,7 +48,14 @@ export interface DiseaseRiskPrediction {
   risk_level: 'low' | 'moderate' | 'high' | 'critical' | 'unknown'
   contributing_factors: string[]
   model_version: string
-  model_status: 'ready' | 'demo'
+  model_status: 'ready' | 'demo' | 'provisional'
+  components?: {
+    scores?: Record<string, number>
+    weights?: Record<string, number>
+    contributions?: Record<string, number>
+    missing?: string[]
+    details?: Record<string, any>
+  } | null
   timestamp: string
 }
 
@@ -62,7 +69,7 @@ export interface Recommendation {
   prevention_steps: string[]
   monitoring_advice: string | null
   urgency: string
-  sources: Array<{ title: string; topic: string; relevance: number }>
+  sources: Array<{ title: string; topic: string; relevance: number; references?: string[] }>
   llm_provider: string
   llm_model: string
   timestamp: string

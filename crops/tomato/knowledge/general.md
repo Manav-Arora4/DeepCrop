@@ -21,3 +21,7 @@
 ## 3. Nitrogen, Phosphorus, Potassium (NPK) Dynamics
 - **Seedling & Vegetative**: Moderate Nitrogen, High Phosphorus (e.g., 10-20-10 or 1-2-1 ratio) to stimulate vigorous root branching.
 - **Fruit Fill**: High Potassium (e.g., 1-1-2 or 1-1-3 ratio) to drive fruit sizing, lycopene synthesis, and osmotic regulation.
+
+## Sources
+- University of Georgia Extension, *Troubleshooting Cultural Problems in Tomatoes* (Circular 1089): https://fieldreport.caes.uga.edu/publications/C1089/troubleshooting-cultural-problems-in-tomatoes/
+- Allen et al. (1998), *Crop evapotranspiration*, FAO Irrigation and Drainage Paper 56, Chapter 6: https://www.fao.org/4/x0490e/x0490e0b.htm

@@ -28,3 +28,9 @@
    - Encourage ladybird beetles (*Stethorus punctillum*) and predatory thrips.
 4. **Biorational Sprays**: Insecticidal soaps, potassium salts of fatty acids, horticultural oils, or neem oil extract (Azadirachtin). Ensure thorough undersurface leaf coverage.
 5. **Acaricides (Chemicals)**: Bifenazate, Abamectin, Spiromesifen, or Etoxazole. Rotate chemical classes to prevent rapid acaricide resistance.
+
+## Sources
+- UConn IPM, *Tomato – Spider Mites*: https://ipm.cahnr.uconn.edu/tomato-spider-mites/
+- Utah State University Extension, *Two-Spotted Spider Mite* (vegetables): https://extension.usu.edu/pests/ipm/notes_ag/veg-spider-mites
+
+Product names are examples only. Follow the product label and local extension advice for rates and timing.

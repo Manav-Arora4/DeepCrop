@@ -1,0 +1,212 @@
+{
+  "summary": {
+    "chunks_ingested": 54,
+    "queries": 20,
+    "k": 5,
+    "hit@1": 0.85,
+    "hit@3": 0.95,
+    "mrr": 0.912,
+    "results_not_tagged_tomato": 0
+  },
+  "queries": [
+    {
+      "query": "brown spots with concentric rings like a target on older lower leaves",
+      "expected": "diseases/early_blight",
+      "rank": 1,
+      "top3": [
+        "diseases/early_blight",
+        "diseases/target_spot",
+        "diseases/late_blight"
+      ]
+    },
+    {
+      "query": "dark greasy water-soaked patches spreading fast in cool wet weather, white growth under leaves",
+      "expected": "diseases/late_blight",
+      "rank": 1,
+      "top3": [
+        "diseases/late_blight",
+        "diseases/early_blight",
+        "diseases/spider_mites"
+      ]
+    },
+    {
+      "query": "many small circular spots with grey centres and dark borders on lower leaves",
+      "expected": "diseases/septoria_leaf_spot",
+      "rank": 2,
+      "top3": [
+        "diseases/early_blight",
+        "diseases/septoria_leaf_spot",
+        "diseases/target_spot"
+      ]
+    },
+    {
+      "query": "small dark spots with yellow halo on leaves and raised scabby spots on fruit, bacteria",
+      "expected": "diseases/bacterial_spot",
+      "rank": 1,
+      "top3": [
+        "diseases/bacterial_spot",
+        "diseases/target_spot",
+        "diseases/early_blight"
+      ]
+    },
+    {
+      "query": "pale yellow patches on top of leaves with olive velvety mould underneath in a humid greenhouse",
+      "expected": "diseases/leaf_mold",
+      "rank": 1,
+      "top3": [
+        "diseases/leaf_mold",
+        "diseases/late_blight",
+        "diseases/mosaic_virus"
+      ]
+    },
+    {
+      "query": "Corynespora lesions on mature leaves, no resistant varieties available",
+      "expected": "diseases/target_spot",
+      "rank": 1,
+      "top3": [
+        "diseases/target_spot",
+        "diseases/septoria_leaf_spot",
+        "disease_prevention"
+      ]
+    },
+    {
+      "query": "whiteflies, upward curling leaves with yellow margins and stunted plants",
+      "expected": "diseases/yellow_leaf_curl",
+      "rank": 1,
+      "top3": [
+        "diseases/yellow_leaf_curl",
+        "diseases/spider_mites",
+        "diseases/mosaic_virus"
+      ]
+    },
+    {
+      "query": "light and dark green mottled mosaic leaves, virus spread by handling and tools",
+      "expected": "diseases/mosaic_virus",
+      "rank": 1,
+      "top3": [
+        "diseases/mosaic_virus",
+        "diseases/yellow_leaf_curl",
+        "diseases/bacterial_spot"
+      ]
+    },
+    {
+      "query": "tiny stippling dots on leaves with fine webbing in hot dry weather",
+      "expected": "diseases/spider_mites",
+      "rank": 1,
+      "top3": [
+        "diseases/spider_mites",
+        "disease_prevention",
+        "diseases/early_blight"
+      ]
+    },
+    {
+      "query": "what does a healthy tomato leaf look like",
+      "expected": "diseases/healthy",
+      "rank": 1,
+      "top3": [
+        "diseases/healthy",
+        "diseases/bacterial_spot",
+        "diseases/early_blight"
+      ]
+    },
+    {
+      "query": "dark sunken patch at the bottom of the fruit, calcium deficiency",
+      "expected": "soil_nutrients",
+      "rank": 1,
+      "top3": [
+        "soil_nutrients",
+        "diseases/bacterial_spot",
+        "diseases/early_blight"
+      ]
+    },
+    {
+      "query": "what soil pH should tomatoes be grown at",
+      "expected": "soil_nutrients",
+      "rank": 1,
+      "top3": [
+        "soil_nutrients",
+        "irrigation",
+        "diseases/healthy"
+      ]
+    },
+    {
+      "query": "should I add lime if the soil test pH is already fine",
+      "expected": "soil_nutrients",
+      "rank": 1,
+      "top3": [
+        "soil_nutrients",
+        "irrigation"
+      ]
+    },
+    {
+      "query": "how much water does a tomato crop need over the season",
+      "expected": "growth_stages_cultivation",
+      "rank": 1,
+      "top3": [
+        "growth_stages_cultivation",
+        "irrigation",
+        "diseases/healthy"
+      ]
+    },
+    {
+      "query": "which growth stage is most sensitive to water shortage, flower drop",
+      "expected": "growth_stages_cultivation",
+      "rank": 1,
+      "top3": [
+        "growth_stages_cultivation",
+        "irrigation",
+        "soil_nutrients"
+      ]
+    },
+    {
+      "query": "crop coefficient Kc for tomato at mid season",
+      "expected": "growth_stages_cultivation",
+      "rank": 1,
+      "top3": [
+        "growth_stages_cultivation",
+        "diseases/healthy",
+        "general"
+      ]
+    },
+    {
+      "query": "how to prevent fungal leaf disease by keeping leaves dry and improving airflow",
+      "expected": "disease_prevention",
+      "rank": 1,
+      "top3": [
+        "disease_prevention",
+        "diseases/leaf_mold",
+        "diseases/septoria_leaf_spot"
+      ]
+    },
+    {
+      "query": "rotate fungicides by FRAC code to avoid resistance",
+      "expected": "disease_prevention",
+      "rank": 4,
+      "top3": [
+        "diseases/early_blight",
+        "diseases/septoria_leaf_spot",
+        "diseases/late_blight"
+      ]
+    },
+    {
+      "query": "drip irrigation versus overhead sprinklers for tomatoes",
+      "expected": "irrigation",
+      "rank": 1,
+      "top3": [
+        "irrigation",
+        "diseases/healthy",
+        "growth_stages_cultivation"
+      ]
+    },
+    {
+      "query": "ideal temperature range for growing tomatoes",
+      "expected": "general",
+      "rank": 2,
+      "top3": [
+        "diseases/healthy",
+        "general",
+        "diseases/target_spot"
+      ]
+    }
+  ]
+}

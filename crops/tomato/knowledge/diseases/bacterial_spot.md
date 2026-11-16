@@ -25,3 +25,9 @@ Bacterial spot is caused by four species of *Xanthomonas*. Bacteria enter plants
 3. **Never Work Wet Foliage**: Farm workers and machinery easily spread bacteria between plants when foliage is damp with dew or rain.
 4. **Bactericides**: Fixed copper formulations combined with Mancozeb (to overcome copper-tolerant bacterial strains) or Actigard (acibenzolar-S-methyl) systemic acquired resistance inducer.
 5. **Bacteriophages**: In organic production, specific bacteriophage sprays (*AgriPhage*) targeted against *Xanthomonas* provide biocontrol.
+
+## Sources
+- University of Minnesota Extension, *Bacterial spot of tomato and pepper*: https://extension.umn.edu/disease-management/bacterial-spot-tomato-and-pepper
+- UW–Madison Plant Disease Diagnostics Clinic, *Bacterial Spot of Tomato*: https://pddc.wisc.edu/2017/02/17/bacterial-spot-tomato/
+
+Product names are examples only. Follow the product label and local extension advice for rates and timing.

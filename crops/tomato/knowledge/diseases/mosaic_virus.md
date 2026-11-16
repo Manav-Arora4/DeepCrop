@@ -24,3 +24,7 @@ ToMV is a highly stable rod-shaped positive-sense ssRNA virus. Unlike insect-vec
    - Prohibit smoking, chewing, or handling tobacco products in or near tomato growing areas.
 3. **Seed Sanitation**: Treat seeds with 10% trisodium phosphate (TSP) for 30 minutes or dry heat (70°C for 2–4 days).
 4. **Immediate Disposal**: Remove infected plants along with their immediate root system and bag them on site; do not drag through the crop canopy.
+
+## Sources
+- Washington State University Hortsense, *Tomato: Mosaic viruses*: https://hortsense.cahnrs.wsu.edu/fact-sheet/tomato-mosaic-viruses/
+- Ohio State University, *Vegetable Disease Facts: Facts in Depth*: https://u.osu.edu/vegetablediseasefacts/?p=1381

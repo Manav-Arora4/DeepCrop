@@ -24,3 +24,7 @@
 2. **Drip Irrigation Maintenance**: Check dripper emitters for clogging and test electrical conductivity (EC) of run-off.
 3. **Pruning & Training**: Remove suckers (indeterminate types) weekly when they are under 5 cm long to channel carbohydrates to main fruit trusses.
 4. **Preventive Nutrition**: Supply balanced N-P-K (1:1:2 ratio during fruit fill) plus soluble calcium (Ca(NO3)2) to prevent blossom end rot.
+
+## Sources
+- University of Georgia Extension, *Troubleshooting Cultural Problems in Tomatoes* (Circular 1089): https://fieldreport.caes.uga.edu/publications/C1089/troubleshooting-cultural-problems-in-tomatoes/
+- University of Minnesota Extension, *Tomato leaf spot diseases*: https://extension.umn.edu/disease-management/tomato-leaf-spot-diseases

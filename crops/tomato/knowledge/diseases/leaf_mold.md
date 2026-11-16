@@ -26,3 +26,10 @@ Leaf mold is a fungal disease particularly prevalent in high tunnels, greenhouse
    - Maintain minimum plant spacing of 45–60 cm.
 2. **Resistant Cultivars**: Many modern greenhouse varieties contain Cf-resistance genes (Cf-2, Cf-4, Cf-9).
 3. **Fungicide Treatments**: Copper fungicides, Chlorothalonil, Cyazofamid, or Boscalid if relative humidity cannot be brought below 85%.
+
+## Sources
+- UConn IPM, *Tomato Leaf Mold*: https://ipm.cahnr.uconn.edu/?p=15437
+- University of Kentucky Plant Pathology, *Leaf Mold of Tomato* (PPFS-VG-52): https://plantpathology.ca.uky.edu/sites/plantpathology.ca.uky.edu/files/PPFS-VG-52.pdf
+- University of Minnesota Extension, *Tomato leaf mold*: https://extension.umn.edu/disease-management/tomato-leaf-mold
+
+Product names are examples only. Follow the product label and local extension advice for rates and timing.

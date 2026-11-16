@@ -40,3 +40,10 @@ Early blight is caused by the necrotrophic fungus *Alternaria solani*. It surviv
 
 ## 5. Monitoring & Decision Thresholds
 Scout the lower canopy weekly starting at transplanting. If 5% of lower leaves display early blight target lesions and relative humidity exceeds 75%, trigger immediate fungicide application and pruning.
+
+## Sources
+- UC IPM, *Early Blight of Tomato*: https://ipm.ucanr.edu/PMG/GARDEN/VEGES/DISEASES/tomearlyblight.html
+- UF/IFAS IPM Florida, *Early Blight*: https://ipm.ifas.ufl.edu/pdfs/Early_Blight.pdf
+- UConn IPM, *Early Blight Management in Fresh Market Tomatoes*: https://ipm.cahnr.uconn.edu/early-blight-management-in-fresh-market-tomatoes/
+
+Product names are examples only. Follow the product label and local extension advice for rates and timing.

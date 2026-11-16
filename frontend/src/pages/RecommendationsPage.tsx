@@ -167,6 +167,29 @@ export default function RecommendationsPage() {
                   </li>
                 ))}
               </ul>
+              {(() => {
+                // References behind the retrieved passages (extension services, FAO), de-duplicated
+                const refs = [...new Set(shown.sources.flatMap((s) => s.references ?? []))]
+                return refs.length > 0 ? (
+                  <ol className="mt-3 flex flex-col gap-1 text-xs text-muted">
+                    {refs.map((r) => {
+                      const url = r.match(/https?:\/\/\S+/)?.[0]
+                      const label = url ? r.replace(url, '').replace(/[:\s]+$/, '').replace(/\*/g, '') : r.replace(/\*/g, '')
+                      return (
+                        <li key={r}>
+                          {url ? (
+                            <a href={url} target="_blank" rel="noreferrer" className="underline decoration-line underline-offset-2 hover:text-ink">
+                              {label}
+                            </a>
+                          ) : (
+                            label
+                          )}
+                        </li>
+                      )
+                    })}
+                  </ol>
+                ) : null
+              })()}
             </section>
           )}
         </article>

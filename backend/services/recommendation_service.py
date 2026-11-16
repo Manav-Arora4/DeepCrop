@@ -93,7 +93,7 @@ class RecommendationService:
         # 4. Query RAG Knowledge Base
         rag_query = f"{crop_name} {disease_query} humidity temperature soil moisture management"
         retrieved = await self.rag_service.retrieve(req.crop_id, rag_query, k=3)
-        knowledge_context = "\n\n".join([f"[{r['source']}]: {r['content']}" for r in retrieved])
+        knowledge_context = "\n\n".join([f"[{r['metadata'].get('title', r['source'])}]: {r['content']}" for r in retrieved])
         if not knowledge_context:
             knowledge_context = "General crop production standards apply."
 
@@ -122,25 +122,26 @@ Please provide an evidence-based recommendation for the farmer.
 
         try:
             raw_text = await self.llm_service.generate_response(SYSTEM_PROMPT, user_message)
-        except Exception as e:
+        except Exception:
+            # No generated advice is invented when the LLM is down; show the inputs and the passages found
+            titles = "\n".join(f"- {r['metadata'].get('title', r['source'])} ({r['metadata'].get('section', '')})" for r in retrieved)
             raw_text = (
-                f"Agricultural Decision Support Notice (LLM Offline / Fallback):\n"
-                f"Based on current observations for {crop_name} ({req.plant_id}):\n"
-                f"1. Environmental Status: {sensor_text}\n"
-                f"2. Visual Foliar Status: {cv_text}\n"
-                f"3. Risk Level: {urgency.upper()}\n\n"
-                f"Recommended immediate actions: Inspect plant visually, verify irrigation drippers, "
-                f"and ensure optimal airflow. If fungal symptoms persist, apply protective copper or biofungicide."
+                f"The language model ({provider_name}: {model_name}) is not available, so no advice was generated.\n\n"
+                f"Inputs for {crop_name} ({req.plant_id}):\n"
+                f"- Sensors: {sensor_text}\n- Leaf photo: {cv_text}\n- Risk: {risk_text}\n\n"
+                f"Relevant knowledge-base passages to read:\n{titles or '- none retrieved'}"
             )
 
         # Parse actions
         lines = [ln.strip() for ln in raw_text.split("\n") if ln.strip()]
         actions = [ln for ln in lines if ln.startswith(("1.", "2.", "3.", "4.", "-", "•"))]
-        if not actions:
-            actions = ["Inspect foliar canopy", "Maintain soil moisture in 40-70% range", "Monitor relative humidity"]
-
         sources_metadata = [
-            {"title": r.get("source", "Doc"), "topic": "agronomy", "relevance": r.get("relevance", 0.8)}
+            {
+                "title": r["metadata"].get("title", r["source"]),
+                "topic": r["metadata"].get("topic", "agronomy"),
+                "relevance": r.get("relevance", 0.0),
+                "references": r.get("references", []),
+            }
             for r in retrieved
         ]
 
@@ -153,7 +154,7 @@ Please provide an evidence-based recommendation for the farmer.
             summary=raw_text[:300] + "...",
             contributing_factors=risk_obj.contributing_factors if risk_obj else ["Environmental observation"],
             recommended_actions=actions[:5],
-            prevention_steps=["Regular weekly scouting", "Sanitize pruning tools", "Maintain optimal irrigation"],
+            prevention_steps=[],
             monitoring_advice=f"Check {crop_name} daily for changes in leaf spotting or moisture stress.",
             urgency=urgency,
             sources=sources_metadata,
