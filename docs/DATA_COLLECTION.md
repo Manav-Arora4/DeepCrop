@@ -35,7 +35,7 @@ One row per observation. Required columns are **bold**.
 | **timestamp** | `2026-11-18T09:30:00+05:30` | When the **photo** was taken, ISO format with time zone |
 | **image_file** | `images/tomato_001/tomato_001_20261118-0930.jpg` | Path relative to `data/user_collected/tomato/`; several photos separated by `;` |
 | **growth_stage** | `flowering` | `seedling`, `vegetative`, `flowering`, `fruit_development`, `maturity` |
-| **sensor_timestamp** | `2026-11-18T09:34:00+05:30` | When the **sensor readings** were taken. Must be within 15 minutes of `timestamp`, and this is checked automatically |
+| **sensor_timestamp** | `2026-11-18T09:34:00+05:30` | When the **sensor readings** were taken. Must be within 15 minutes of `timestamp`; this is checked when the data is loaded |
 | **soil_moisture_pct** | `38.5` | 0–100, from the sensor |
 | **temperature_c** | `29.1` | Air temperature in °C |
 | **humidity_pct** | `78` | Relative humidity, 0–100 |
@@ -46,9 +46,9 @@ One row per observation. Required columns are **bold**.
 | **sensor_calibration_status** | `uncalibrated` | `calibrated` (state the date in notes), `factory`, `uncalibrated` |
 | **disease_status** | `diseased` | `healthy`, `diseased`, `unsure` |
 | **disease_type** | `tomato_early_blight` | Must match `disease_status`, see the rules below |
-| leaf_count_affected | `3` | Leaves showing symptoms (see Severity below) |
-| total_leaf_count | `24` | Leaves examined (see Severity below) |
-| **severity** | `mild` | `none`, `mild`, `moderate`, `severe`. Computed from the leaf counts, see below |
+| **leaf_count_affected** | `3` | Examined leaves with symptoms of the suspected disease (see Severity below) |
+| **total_leaf_count** | `24` | Leaves examined (see Severity below). Must be at least `leaf_count_affected` |
+| **severity** | `mild` | `none`, `mild`, `moderate`, `severe`. Must match the leaf counts (see below); a mismatch is flagged when the data is loaded for Phase 6 |
 | **labelled_by** | `Manav` | Who decided the disease label |
 | label_checked_by | `Dr. Rao (agronomy)` | Second opinion, if any. Makes the labels much more credible |
 | observation_conditions | `overcast` | Light when photographed: `direct_sun`, `shade`, `overcast`, `indoor`, `artificial` |
@@ -63,7 +63,7 @@ One row per observation. Required columns are **bold**.
 | disease_status | disease_type |
 |---|---|
 | `healthy` | `tomato_healthy` |
-| `diseased` | the specific disease ID below, or `other` if it's a disease outside the list |
+| `diseased` | the specific disease ID below, or `other` if it's a disease outside the list (see the note below) |
 | `unsure` | `unknown` |
 
 Disease IDs (the same 10 classes the photo model knows):
@@ -71,13 +71,20 @@ Disease IDs (the same 10 classes the photo model knows):
 
 `unsure` rows are kept but left out of training and testing until they're re-labelled.
 
+`other` rows are **left out of the 10-class leaf-photo experiment**, because the model has no class for them and its outputs could never match the label.
+- They can still count as `diseased` in a binary healthy-vs-diseased experiment, as long as the report says so.
+- They only join the 10-class experiment if the model's classes are explicitly expanded and it is retrained.
+
 ### Severity
 
 1. **Count the leaves.**
    - Small plants: count every leaf as `total_leaf_count`.
-   - Large plants: examine the **3 lowest branches** (where disease usually starts) and count the leaves on them.
-2. **Count the symptomatic leaves.** Count every examined leaf with any visible symptom (spots, lesions, yellowing, curling, mould) as `leaf_count_affected`.
-3. **Work out the severity** from `leaf_count_affected / total_leaf_count`:
+   - Large plants: examine the **3 lowest branches** (where disease usually starts) and count the leaves on them. The result is **examined-leaf severity**, not whole-plant severity, and the report should call it that.
+2. **Count the symptomatic leaves.** Count every examined leaf with symptoms **attributable to the suspected disease** as `leaf_count_affected`.
+   - Disease symptoms include spots, lesions, mould, and the mottling or curling of the virus classes.
+   - Yellowing or curling that is more likely a nutrient deficiency, water stress or sun scorch is **not** counted. Describe it in `notes` instead.
+   - When unsure whether a symptom is disease, count it, and record the doubt in `notes`.
+3. **Work out the severity** from `leaf_count_affected / total_leaf_count`. The severity label must follow from the counts:
 
 | Affected share | severity |
 |---|---|
@@ -95,11 +102,21 @@ These are computed by a script from **later** observations of the same plant. No
 | Column | Meaning |
 |---|---|
 | `previous_disease_status` | `disease_status` at this plant's previous visit |
-| `disease_onset_date` | Date of this plant's first `diseased` observation (blank if it never became diseased) |
-| `future_disease_3d` | `1` if this plant is observed `diseased` within the next 3 days, else `0` |
-| `future_disease_7d` | `1` if this plant is observed `diseased` within the next 7 days, else `0` |
+| `last_healthy_observation_date` | Date of this plant's last `healthy` observation before its first `diseased` one |
+| `first_diseased_observation_date` | Date this plant was first **observed** `diseased` (blank if never). The true biological onset is unknown; it lies somewhere between this date and the previous one |
+| `future_disease_3d` | `1`, `0` or blank for the next 3 days, using the rules below |
+| `future_disease_7d` | `1`, `0` or blank for the next 7 days, using the rules below |
 
-`future_disease_*` is left empty for the last few days of collection, because the future outcome isn't known yet.
+Rules for `future_disease_Nd`, for an observation at time *t*:
+
+- **`1`:** the plant is observed `diseased` at some visit after *t* and within *N* days of *t*.
+- **`0`:** only when follow-up is sufficient. That means all three of these hold:
+  - the plant has a visit at or after *t* + *N* days, so the whole window is covered;
+  - no two consecutive visits inside the window are more than 3 days apart;
+  - every visit in the window is `healthy`.
+- **Blank:** anything else, such as missing visits, a gap longer than 3 days, the end of collection, or an `unsure` visit inside the window. Blank rows are excluded from the risk experiment and never counted as negatives.
+
+Never treat a missing future observation as "stayed healthy".
 
 ## How the data will be used
 
