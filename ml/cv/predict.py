@@ -30,8 +30,10 @@ def main():
         classes = json.load(f).get("classes", [])
 
     model_pth = Path(f"crops/{args.crop}/models/cv/efficientnet_{args.crop}_v1.pth")
+    card_path = model_pth.parent / "model_card_v1.json"
+    version = json.loads(card_path.read_text())["version"] if card_path.exists() else "v1.0"
     if model_pth.exists():
-        model = EfficientNetCVModel(model_pth, args.crop, classes)
+        model = EfficientNetCVModel(model_pth, args.crop, classes, version=version)
     else:
         print("[Info] Trained weights not found. Using Demo model simulator.")
         model = DemoCVModel(args.crop, classes)

@@ -4,6 +4,18 @@ from typing import List, Dict, Any, Optional
 from ml.cv.models.base import AbstractCVModel, CVPredictionResult, ModelInfo
 
 
+def build_efficientnet_b0(num_classes: int, pretrained: bool = False, dropout: float = 0.3):
+    """EfficientNet-B0 with a new classifier head. Shared by training and inference so saved weights always load."""
+    import torch
+    from torchvision import models
+
+    weights = models.EfficientNet_B0_Weights.DEFAULT if pretrained else None
+    model = models.efficientnet_b0(weights=weights)
+    model.classifier[0].p = dropout
+    model.classifier[1] = torch.nn.Linear(model.classifier[1].in_features, num_classes)
+    return model
+
+
 class EfficientNetCVModel(AbstractCVModel):
     """
     Production PyTorch EfficientNetB0 CV Model.
@@ -25,15 +37,10 @@ class EfficientNetCVModel(AbstractCVModel):
 
         try:
             import torch
-            from torchvision import transforms, models
-            from PIL import Image
+            from torchvision import transforms
 
-            num_classes = len(self.disease_classes)
-            model = models.efficientnet_b0(weights=None)
-            in_features = model.classifier[1].in_features
-            model.classifier[1] = torch.nn.Linear(in_features, num_classes)
-
-            state_dict = torch.load(self.model_path, map_location="cpu")
+            model = build_efficientnet_b0(len(self.disease_classes))
+            state_dict = torch.load(self.model_path, map_location="cpu", weights_only=True)
             model.load_state_dict(state_dict)
             model.eval()
             self._model = model

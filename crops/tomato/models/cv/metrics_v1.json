@@ -1,0 +1,592 @@
+{
+  "version": "tomato_cv_v1.0",
+  "plantvillage_test": {
+    "images": 2594,
+    "accuracy": 0.9958,
+    "macro_f1": 0.9944,
+    "classes_present": [
+      "tomato_bacterial_spot",
+      "tomato_early_blight",
+      "tomato_late_blight",
+      "tomato_leaf_mold",
+      "tomato_septoria_leaf_spot",
+      "tomato_spider_mites",
+      "tomato_target_spot",
+      "tomato_yellow_leaf_curl_virus",
+      "tomato_mosaic_virus",
+      "tomato_healthy"
+    ],
+    "per_class": {
+      "tomato_bacterial_spot": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 304.0
+      },
+      "tomato_early_blight": {
+        "precision": 0.9783,
+        "recall": 0.9643,
+        "f1-score": 0.9712,
+        "support": 140.0
+      },
+      "tomato_late_blight": {
+        "precision": 0.9855,
+        "recall": 0.9927,
+        "f1-score": 0.9891,
+        "support": 273.0
+      },
+      "tomato_leaf_mold": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 136.0
+      },
+      "tomato_septoria_leaf_spot": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 253.0
+      },
+      "tomato_spider_mites": {
+        "precision": 1.0,
+        "recall": 0.9917,
+        "f1-score": 0.9958,
+        "support": 240.0
+      },
+      "tomato_target_spot": {
+        "precision": 0.99,
+        "recall": 0.995,
+        "f1-score": 0.9925,
+        "support": 200.0
+      },
+      "tomato_yellow_leaf_curl_virus": {
+        "precision": 0.9987,
+        "recall": 1.0,
+        "f1-score": 0.9993,
+        "support": 766.0
+      },
+      "tomato_mosaic_virus": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 54.0
+      },
+      "tomato_healthy": {
+        "precision": 0.9956,
+        "recall": 0.9956,
+        "f1-score": 0.9956,
+        "support": 228.0
+      }
+    },
+    "confusion_matrix": [
+      [
+        304,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        135,
+        4,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        1,
+        271,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      [
+        0,
+        0,
+        0,
+        136,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        253,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        238,
+        1,
+        1,
+        0,
+        0
+      ],
+      [
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        199,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        766,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        54,
+        0
+      ],
+      [
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        227
+      ]
+    ]
+  },
+  "plantvillage_test_mapped": {
+    "images": 1832,
+    "accuracy": 0.9951,
+    "macro_f1": 0.9937,
+    "classes_present": [
+      "tomato_bacterial_spot",
+      "tomato_early_blight",
+      "tomato_late_blight",
+      "tomato_leaf_mold",
+      "tomato_septoria_leaf_spot",
+      "tomato_spider_mites",
+      "tomato_target_spot",
+      "tomato_yellow_leaf_curl_virus",
+      "tomato_healthy"
+    ],
+    "per_class": {
+      "tomato_bacterial_spot": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 304.0
+      },
+      "tomato_early_blight": {
+        "precision": 0.9854,
+        "recall": 0.9643,
+        "f1-score": 0.9747,
+        "support": 140.0
+      },
+      "tomato_late_blight": {
+        "precision": 0.9704,
+        "recall": 0.9924,
+        "f1-score": 0.9813,
+        "support": 132.0
+      },
+      "tomato_leaf_mold": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 136.0
+      },
+      "tomato_septoria_leaf_spot": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 144.0
+      },
+      "tomato_spider_mites": {
+        "precision": 1.0,
+        "recall": 0.9917,
+        "f1-score": 0.9958,
+        "support": 240.0
+      },
+      "tomato_target_spot": {
+        "precision": 0.99,
+        "recall": 0.995,
+        "f1-score": 0.9925,
+        "support": 200.0
+      },
+      "tomato_yellow_leaf_curl_virus": {
+        "precision": 0.9975,
+        "recall": 1.0,
+        "f1-score": 0.9987,
+        "support": 392.0
+      },
+      "tomato_healthy": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 144.0
+      }
+    },
+    "confusion_matrix": [
+      [
+        304,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        135,
+        4,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        1,
+        131,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        136,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        144,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        238,
+        1,
+        1,
+        0,
+        0
+      ],
+      [
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        199,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        392,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        144
+      ]
+    ]
+  },
+  "plantdoc": {
+    "images": 746,
+    "accuracy": 0.2869,
+    "macro_f1": 0.1688,
+    "classes_present": [
+      "tomato_bacterial_spot",
+      "tomato_early_blight",
+      "tomato_late_blight",
+      "tomato_leaf_mold",
+      "tomato_septoria_leaf_spot",
+      "tomato_spider_mites",
+      "tomato_yellow_leaf_curl_virus",
+      "tomato_mosaic_virus",
+      "tomato_healthy"
+    ],
+    "per_class": {
+      "tomato_bacterial_spot": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1-score": 0.0,
+        "support": 110.0
+      },
+      "tomato_early_blight": {
+        "precision": 0.1891,
+        "recall": 0.8636,
+        "f1-score": 0.3102,
+        "support": 88.0
+      },
+      "tomato_late_blight": {
+        "precision": 0.3596,
+        "recall": 0.5766,
+        "f1-score": 0.4429,
+        "support": 111.0
+      },
+      "tomato_leaf_mold": {
+        "precision": 0.2222,
+        "recall": 0.022,
+        "f1-score": 0.04,
+        "support": 91.0
+      },
+      "tomato_septoria_leaf_spot": {
+        "precision": 0.4628,
+        "recall": 0.3709,
+        "f1-score": 0.4118,
+        "support": 151.0
+      },
+      "tomato_spider_mites": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1-score": 0.0,
+        "support": 2.0
+      },
+      "tomato_yellow_leaf_curl_virus": {
+        "precision": 0.4688,
+        "recall": 0.1974,
+        "f1-score": 0.2778,
+        "support": 76.0
+      },
+      "tomato_mosaic_virus": {
+        "precision": 1.0,
+        "recall": 0.0185,
+        "f1-score": 0.0364,
+        "support": 54.0
+      },
+      "tomato_healthy": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1-score": 0.0,
+        "support": 63.0
+      }
+    },
+    "confusion_matrix": [
+      [
+        0,
+        70,
+        15,
+        1,
+        22,
+        0,
+        0,
+        2,
+        0,
+        0
+      ],
+      [
+        0,
+        76,
+        4,
+        0,
+        8,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        40,
+        64,
+        3,
+        4,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        29,
+        49,
+        2,
+        9,
+        0,
+        0,
+        2,
+        0,
+        0
+      ],
+      [
+        1,
+        91,
+        2,
+        1,
+        56,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        2,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        43,
+        2,
+        0,
+        16,
+        0,
+        0,
+        15,
+        0,
+        0
+      ],
+      [
+        0,
+        28,
+        10,
+        2,
+        4,
+        0,
+        0,
+        8,
+        1,
+        1
+      ],
+      [
+        1,
+        23,
+        32,
+        0,
+        2,
+        0,
+        0,
+        5,
+        0,
+        0
+      ]
+    ]
+  }
+}

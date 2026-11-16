@@ -1,80 +1,75 @@
 """
-PlantVillage Dataset Loader with Leaf-ID Group Splitting.
+Tomato leaf image datasets for CV training and evaluation.
 
-Academic Validity Notice:
-PlantVillage (mohanty/PlantVillage) contains multiple photographic captures of the same leaf.
-Naive random train/val split leads to significant data leakage.
-This module extracts or estimates leaf groupings and uses GroupShuffleSplit / StratifiedGroupKFold.
+Samples come from the index files written by scripts/data/setup_datasets.py and
+the leakage-aware splits written by ml/cv/splits.py:
+  data/processed/tomato/cv/splits.csv          PlantVillage train / val / test
+  data/processed/tomato/cv/plantdoc_index.csv  PlantDoc external test (never trained on)
 """
 
-import hashlib
+import csv
 from pathlib import Path
-from typing import Tuple, List, Dict, Any, Optional
-import numpy as np
+from typing import Any, Dict, List, Optional, Tuple
+
 import torch
-from torch.utils.data import Dataset, DataLoader
-from torchvision import transforms
 from PIL import Image
+from torch.utils.data import Dataset
+from torchvision import transforms
+
+SPLITS_CSV = Path("data/processed/tomato/cv/splits.csv")
+PLANTDOC_INDEX = Path("data/processed/tomato/cv/plantdoc_index.csv")
 
 
-def generate_leaf_id(image: Image.Image, filename_or_key: str) -> str:
-    """
-    Generate or extract a persistent leaf_id to prevent multi-angle image data leakage.
-    If physical leaf_id is embedded in filename, parse it; otherwise hash low-res structural features.
-    """
-    # Check if filename contains structured leaf ID (e.g. leaf_00123_angle1.jpg)
-    stem = Path(filename_or_key).stem
-    parts = stem.split("_")
-    if len(parts) >= 2 and parts[0] == "leaf":
-        return parts[1]
-
-    # Structural feature perceptual hash fallback
-    small = image.resize((16, 16)).convert("L")
-    pixels = list(small.getdata())
-    avg = sum(pixels) / len(pixels)
-    bits = "".join(["1" if p > avg else "0" for p in pixels])
-    return hashlib.md5(bits.encode("utf-8")).hexdigest()[:12]
+def load_split(split: str, splits_csv: Path = SPLITS_CSV) -> List[Dict[str, Any]]:
+    """Return PlantVillage samples for 'train', 'val' or 'test'."""
+    if not splits_csv.exists():
+        raise FileNotFoundError(f"{splits_csv} not found. Run: python -m ml.cv.splits")
+    with open(splits_csv, encoding="utf-8") as f:
+        return [
+            {"path": r["path"], "label": int(r["class_index"]), "class_id": r["class_id"],
+             "group": r["group"], "leaf_mapped": r["leaf_mapped"] == "1"}
+            for r in csv.DictReader(f) if r["split"] == split
+        ]
 
 
-class PlantVillageDataset(Dataset):
-    """PyTorch Dataset wrapper for PlantVillage leaf images."""
+def load_plantdoc(index_csv: Path = PLANTDOC_INDEX) -> List[Dict[str, Any]]:
+    """Return PlantDoc tomato samples (external, real-world test set)."""
+    with open(index_csv, encoding="utf-8") as f:
+        return [{"path": r["path"], "label": int(r["class_index"]), "class_id": r["class_id"]}
+                for r in csv.DictReader(f)]
 
-    def __init__(self, samples: List[Dict[str, Any]], transform=None):
+
+class LeafImageDataset(Dataset):
+    """PyTorch Dataset over index samples; returns (image_tensor, label, index)."""
+
+    def __init__(self, samples: List[Dict[str, Any]], transform: Optional[transforms.Compose] = None):
         self.samples = samples
         self.transform = transform
 
     def __len__(self) -> int:
         return len(self.samples)
 
-    def __getitem__(self, idx: int) -> Tuple[torch.Tensor, int, str]:
+    def __getitem__(self, idx: int) -> Tuple[torch.Tensor, int, int]:
         item = self.samples[idx]
-        image = item["image"]
-        if isinstance(image, str) or isinstance(image, Path):
-            image = Image.open(image).convert("RGB")
-        elif not isinstance(image, Image.Image):
-            image = Image.fromarray(image).convert("RGB")
-
-        label = item["label"]
-        leaf_id = item.get("leaf_id", "")
-
+        image = Image.open(item["path"]).convert("RGB")
         if self.transform:
             image = self.transform(image)
-
-        return image, label, leaf_id
+        return image, item["label"], idx
 
 
 def get_data_transforms(image_size: int = 224) -> Tuple[transforms.Compose, transforms.Compose]:
-    """Return standard training (with augmentation) and validation transforms."""
+    """Return training (with augmentation) and evaluation transforms."""
     train_transform = transforms.Compose([
-        transforms.Resize((image_size, image_size)),
+        transforms.RandomResizedCrop(image_size, scale=(0.7, 1.0)),
         transforms.RandomHorizontalFlip(),
         transforms.RandomVerticalFlip(),
         transforms.RandomRotation(20),
-        transforms.ColorJitter(brightness=0.15, contrast=0.15, saturation=0.15),
+        transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.02),
         transforms.ToTensor(),
         transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
     ])
 
+    # Must match the inference transform in ml/cv/models/efficientnet.py
     val_transform = transforms.Compose([
         transforms.Resize((image_size, image_size)),
         transforms.ToTensor(),

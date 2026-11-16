@@ -2,8 +2,8 @@
 
 Status of each phase from the project plan, checked against what is actually in the repository.
 
-**Last reviewed:** 2026-10-30
-**Current position:** Phase 2 is done. Next: Phase 3 (CV training) and Phase 4 (hardware), plus the Phase 1 check that everything runs.
+**Last reviewed:** 2026-11-16
+**Current position:** Phase 3 v1 is trained: 99.6% on PlantVillage, 28.7% on real-world PlantDoc photos. Next: close the field-photo gap (Phase 3 v2), Phase 4 hardware, and the Phase 1 run check.
 
 Status key: ✅ done · 🟡 partly done / code written but not verified · ⬜ not started
 
@@ -51,17 +51,32 @@ Status key: ✅ done · 🟡 partly done / code written but not verified · ⬜ 
 
 **Done when:** one command sets up the tomato data and writes the manifest. ✅ Done 2026-10-30.
 
-## Phase 3 — Tomato Computer Vision 🟡 (code only)
+## Phase 3 — Tomato Computer Vision 🟡 (v1 trained; field accuracy is low)
 
 - [x] EfficientNetB0 model, data loader, train, evaluate and predict scripts
 - [x] Backend CV engine, which falls back to a clearly labelled `demo` model when no weights exist
-- [ ] **Leakage-aware split.** Load samples and `leaf_id` from `data/processed/tomato/cv/plantvillage_index.csv`, which holds the official leaf map. That replaces the perceptual-hash guess in `data_loader.py`.
-  - 5,345 images (29%) have no leaf-map entry. Decide how to handle them: test on mapped images only, or group them by near-duplicate similarity. Say which in the report.
-- [ ] **Fix `train.py --dry-run`.** It saves *untrained* weights as `efficientnet_tomato_v1.pth`, the exact file `cv_engine.py` loads as the real model. A dry run would then serve random predictions labelled as a ready model. Save dry-run output under a different name, or not at all.
-- [ ] `train.py` doesn't load any data yet. It prints a message and exits.
-- [ ] Train a baseline and record accuracy, per-class precision/recall/F1 and the confusion matrix
-- [ ] Test on PlantDoc, and expect a large accuracy drop
-- [ ] Save `crops/tomato/models/cv/efficientnet_tomato_v1.pth` with a version number (`tomato_cv_v1.0`)
+- [x] **Leakage-aware split** (`python -m ml.cv.splits`).
+  - Groups come from the official leaf map, merged with near-duplicate photos (dHash ≤ 4 bits).
+  - Split 70/15/15 by group, stratified by class: 8,486 groups, and no group spans two splits.
+  - The 29% of images without a leaf-map entry are reported as a caveat. All of Mosaic Virus is unmapped, so a mapped-only protocol would drop that class.
+- [x] **Dry run fixed:** `train.py --dry-run` runs one batch on the GPU and saves nothing.
+- [x] **Training and inference build the same model** (`build_efficientnet_b0`). Before, saved weights could not load in the backend.
+- [x] **Model registered in `crop.json`** (`cv_model`), so the backend loads it instead of the demo model.
+- [x] **Trained `tomato_cv_v1.0`:** 15 epochs, 7.6 min on an RTX 4060. Best validation macro-F1 0.997 at epoch 14.
+- [x] **Results** in [`docs/results/cv_tomato_v1.md`](results/cv_tomato_v1.md):
+
+  | Test set | Accuracy | Macro-F1 |
+  |---|---:|---:|
+  | PlantVillage test, 2,594 images | 99.6% | 0.994 |
+  | PlantVillage test, leaf-map verified, 1,832 images | 99.5% | 0.994 |
+  | PlantDoc real-world, 746 images | **28.7%** | **0.169** |
+
+- [ ] **Field-photo gap.** On PlantDoc the model predicts Early Blight for 54% of photos. Your own phone photos (Phase 5) will look like PlantDoc, not PlantVillage, so this needs a v2 before Phase 6. Options:
+  - Fine-tune on PlantDoc's own `train/` folder and test on its `test/` folder.
+  - Use stronger augmentation, such as background replacement, random crops and blur.
+  - Crop the leaf before classifying.
+- [ ] `.pth` weights are git-ignored. Rebuild with `python -m ml.cv.splits` then `python -m ml.cv.train`, or decide to commit the 16 MB file.
+- [ ] Check `/cv/predict` end to end once the backend runs (Phase 1). The model loads and predicts correctly through `ml.cv.predict`.
 
 **Done when:** a versioned model is served by `/cv/predict`, with PlantVillage and PlantDoc metrics written down.
 
