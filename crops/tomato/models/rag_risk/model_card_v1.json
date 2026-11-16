@@ -1,0 +1,111 @@
+{
+  "llm": "qwen2.5:7b",
+  "chunks": 54,
+  "source": "external dataset supplied for this project; not collected with this project's sensor node",
+  "rows": 840,
+  "plants": 30,
+  "grounding": {
+    "total": 837,
+    "passed": 837,
+    "pass_rate": 1.0,
+    "needed_retry": 26,
+    "failed": 0,
+    "top_failures": ""
+  },
+  "tasks": {
+    "detection": {
+      "rows_scored": 837,
+      "rows_total": 837,
+      "positives": 168,
+      "sensor": {
+        "roc_auc": 0.612,
+        "pr_auc": 0.264,
+        "f1": 0.296,
+        "brier": 0.198,
+        "roc_auc_ci95": [
+          0.491,
+          0.744
+        ],
+        "pr_auc_ci95": [
+          0.134,
+          0.435
+        ]
+      },
+      "rag": {
+        "roc_auc": 0.49,
+        "pr_auc": 0.2,
+        "f1": 0.234,
+        "brier": 0.233,
+        "roc_auc_ci95": [
+          0.404,
+          0.577
+        ],
+        "pr_auc_ci95": [
+          0.093,
+          0.336
+        ]
+      },
+      "sensor_plus_rag": {
+        "roc_auc": 0.58,
+        "pr_auc": 0.23,
+        "f1": 0.192,
+        "brier": 0.197,
+        "roc_auc_ci95": [
+          0.516,
+          0.658
+        ],
+        "pr_auc_ci95": [
+          0.11,
+          0.381
+        ]
+      }
+    },
+    "risk_7d": {
+      "rows_scored": 533,
+      "rows_total": 533,
+      "positives": 60,
+      "sensor": {
+        "roc_auc": 0.549,
+        "pr_auc": 0.142,
+        "f1": 0.207,
+        "brier": 0.229,
+        "roc_auc_ci95": [
+          0.392,
+          0.683
+        ],
+        "pr_auc_ci95": [
+          0.061,
+          0.308
+        ]
+      },
+      "rag": {
+        "roc_auc": 0.458,
+        "pr_auc": 0.105,
+        "f1": 0.141,
+        "brier": 0.239,
+        "roc_auc_ci95": [
+          0.369,
+          0.537
+        ],
+        "pr_auc_ci95": [
+          0.047,
+          0.19
+        ]
+      },
+      "sensor_plus_rag": {
+        "roc_auc": 0.52,
+        "pr_auc": 0.134,
+        "f1": 0.199,
+        "brier": 0.207,
+        "roc_auc_ci95": [
+          0.348,
+          0.663
+        ],
+        "pr_auc_ci95": [
+          0.058,
+          0.273
+        ]
+      }
+    }
+  }
+}

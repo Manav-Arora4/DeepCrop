@@ -196,8 +196,10 @@ function AlertsCard({ reading, cv, risk }: { reading?: SensorReading; cv?: CVPre
   if (cv?.low_confidence_warning) {
     alerts.push({ level: 'warn', title: 'Uncertain leaf diagnosis', detail: `${Math.round(cv.confidence * 100)}% confidence. Retake the photo in shade` })
   }
-  if (!risk || risk.model_status === 'demo') {
+  if (risk?.model_status === 'demo') {
     alerts.push({ level: 'info', title: 'Risk model is a demo', detail: 'Trained on synthetic data until field data arrives' })
+  } else {
+    alerts.push({ level: 'info', title: 'Risk weights are provisional', detail: 'Fitted once photos and readings exist for the same plants' })
   }
   alerts.push({ level: 'info', title: 'pH is relative', detail: 'Probe is uncalibrated; compare readings, not absolute pH' })
 
