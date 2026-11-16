@@ -9,6 +9,7 @@ const META = {
   supervisor: 'Dr. Swarna Kolaventi',
   affiliation: 'uGDX School of Technology',
   year: '2026-2027',
+  repo: 'https://github.com/Manav-Arora4/DeepCrop',
 }
 
 const REFS = {

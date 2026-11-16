@@ -7,7 +7,7 @@ const path = require('path')
 const {
   Document, Packer, Paragraph, TextRun, ImageRun, Table, TableRow, TableCell, WidthType, AlignmentType,
   HeadingLevel, PageBreak, Footer, PageNumber, NumberFormat, ShadingType, LevelFormat, TabStopType,
-  BorderStyle, VerticalAlign,
+  BorderStyle, VerticalAlign, ExternalHyperlink,
 } = require('docx')
 const { META, REFS, FRONT, CHAPTERS } = require('./content')
 
@@ -157,7 +157,11 @@ const titlePage = [
   ...blank(1),
   center('Supervisor:', 24, { bold: true, before: 240, after: 40 }),
   center(META.supervisor, 26, { after: 40 }),
-  center(`(${META.affiliation})`, 24, { after: 480 }),
+  center(`(${META.affiliation})`, 24, { after: 280 }),
+  new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 280 }, children: [
+    new TextRun({ text: 'Project code: ', font: FONT, size: 24, bold: true }),
+    new ExternalHyperlink({ link: META.repo, children: [new TextRun({ text: META.repo, font: FONT, size: 24, style: 'Hyperlink' })] }),
+  ] }),
   center(`AY: ${META.year}`, 26, { bold: true }),
 ]
 
