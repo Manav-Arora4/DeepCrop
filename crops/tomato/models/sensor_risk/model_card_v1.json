@@ -1,0 +1,152 @@
+{
+  "version": "sensor_risk_v1.0",
+  "trained_at": "2026-11-16T13:13:04+00:00",
+  "features": [
+    "temperature_c",
+    "humidity_pct",
+    "soil_moisture_pct",
+    "vpd_kpa",
+    "humidity_mean_3",
+    "humidity_max_3",
+    "hours_humid_proxy_3",
+    "temperature_mean_3",
+    "moisture_mean_3",
+    "moisture_change_1",
+    "ph_mv_vs_baseline",
+    "watered_last_24h",
+    "growth_stage_idx"
+  ],
+  "data": {
+    "source": "external dataset supplied for this project; not collected with this project's sensor node",
+    "file": "data/user_collected/tomato/observations.csv",
+    "rows": 840,
+    "plants": 30,
+    "date_range": "2026-10-01 to 2026-10-28",
+    "devices": [
+      "esp32_001"
+    ]
+  },
+  "evaluation": "5-fold StratifiedGroupKFold by plant_id, seed 42; plant-level bootstrap CIs",
+  "tasks": {
+    "detection": {
+      "rows": 837,
+      "positives": 168,
+      "plants": 30,
+      "positive_plants": 11,
+      "models": {
+        "logistic_regression": {
+          "roc_auc": 0.569,
+          "pr_auc": 0.21,
+          "f1": 0.383,
+          "brier": 0.243,
+          "roc_auc_ci95": [
+            0.448,
+            0.686
+          ],
+          "pr_auc_ci95": [
+            0.098,
+            0.351
+          ]
+        },
+        "random_forest": {
+          "roc_auc": 0.612,
+          "pr_auc": 0.264,
+          "f1": 0.296,
+          "brier": 0.198,
+          "roc_auc_ci95": [
+            0.491,
+            0.744
+          ],
+          "pr_auc_ci95": [
+            0.134,
+            0.435
+          ]
+        },
+        "no_skill_baseline": {
+          "roc_auc": 0.475,
+          "pr_auc": 0.192,
+          "f1": 0.0,
+          "brier": 0.161
+        }
+      },
+      "best": "random_forest",
+      "feature_importance": {
+        "moisture_mean_3": 0.19,
+        "soil_moisture_pct": 0.145,
+        "humidity_max_3": 0.097,
+        "moisture_change_1": 0.086,
+        "humidity_mean_3": 0.083,
+        "ph_mv_vs_baseline": 0.08,
+        "temperature_mean_3": 0.076,
+        "vpd_kpa": 0.074,
+        "humidity_pct": 0.06,
+        "temperature_c": 0.056,
+        "growth_stage_idx": 0.041,
+        "hours_humid_proxy_3": 0.007,
+        "watered_last_24h": 0.006
+      }
+    },
+    "risk_7d": {
+      "rows": 533,
+      "positives": 60,
+      "plants": 28,
+      "positive_plants": 9,
+      "models": {
+        "logistic_regression": {
+          "roc_auc": 0.549,
+          "pr_auc": 0.142,
+          "f1": 0.207,
+          "brier": 0.229,
+          "roc_auc_ci95": [
+            0.392,
+            0.683
+          ],
+          "pr_auc_ci95": [
+            0.061,
+            0.308
+          ]
+        },
+        "random_forest": {
+          "roc_auc": 0.431,
+          "pr_auc": 0.108,
+          "f1": 0.114,
+          "brier": 0.156,
+          "roc_auc_ci95": [
+            0.29,
+            0.572
+          ],
+          "pr_auc_ci95": [
+            0.047,
+            0.229
+          ]
+        },
+        "no_skill_baseline": {
+          "roc_auc": 0.438,
+          "pr_auc": 0.099,
+          "f1": 0.0,
+          "brier": 0.1
+        }
+      },
+      "best": "logistic_regression",
+      "feature_importance": {
+        "soil_moisture_pct": 0.17,
+        "moisture_mean_3": 0.169,
+        "hours_humid_proxy_3": 0.165,
+        "humidity_max_3": 0.1,
+        "growth_stage_idx": 0.099,
+        "humidity_pct": 0.066,
+        "humidity_mean_3": 0.062,
+        "vpd_kpa": 0.059,
+        "temperature_c": 0.04,
+        "temperature_mean_3": 0.021,
+        "moisture_change_1": 0.02,
+        "watered_last_24h": 0.018,
+        "ph_mv_vs_baseline": 0.01
+      }
+    }
+  },
+  "weights_files": {
+    "detection": "sensor_detection_v1.joblib",
+    "risk_7d": "sensor_risk_7d_v1.joblib"
+  }
+}

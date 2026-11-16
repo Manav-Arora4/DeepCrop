@@ -109,16 +109,30 @@ Fixed during the check:
 
 **Done when:** enough labelled image + sensor observations exist for the Phase 6 experiments. Set a target count early.
 
-## Phase 6 — Disease-Risk Model ⬜ (main research phase)
+## Phase 6 — Disease-Risk Model 🟡 (sensor scorer done; fusion pending paired data)
 
-- [x] Feature builder, Random Forest and XGBoost wrappers, train/evaluate scripts (synthetic data, demo only)
-- [ ] Define the risk label from real observations, e.g. disease observed within N days
-- [ ] Train three models on Phase 5 data: CV-only, IoT-only, multimodal
-- [ ] Split by plant or by time, never randomly by row
-- [ ] Compare accuracy, precision, recall, F1, ROC-AUC and confusion matrices, and state that the dataset is small
-- [ ] Save a versioned model (`tomato_risk_v1.0`)
+The architecture changed on 2026-11-16 to a **weighted fusion of three separate scorers**. Each scorer is built and evaluated on its own:
+- **Photo:** `tomato_cv_v2.0`
+- **Sensor:** `sensor_risk_v1.0`
+- **RAG + LLM:** an assessment from Phase 8
 
-**Done when:** the three-way comparison table is done on real data. This answers the research question.
+`ml/fusion.py` combines whichever scores are available, and its weights stay provisional until fitted on paired data.
+
+- [x] Risk labels defined from observations (`future_disease_3d/7d` with the follow-up rules in `docs/DATA_COLLECTION.md`)
+- [x] **Sensor scorer** (`python -m ml.sensor_risk.train`), trained on the external dataset supplied for the project. It has 840 observations of 30 plants and no photos.
+  - Features use only past readings, and leaking columns are excluded.
+  - Evaluation uses 5-fold cross-validation grouped by plant, with plant-level bootstrap confidence intervals.
+  - Results in [`docs/results/sensor_risk_v1.md`](results/sensor_risk_v1.md):
+    - Detection ROC-AUC 0.61 (CI 0.49–0.74).
+    - 7-day risk ROC-AUC 0.55 (CI 0.39–0.68).
+  - So the sensors carry a weak signal on this data. Both intervals include chance.
+- [x] **Fusion interface** (`ml/fusion.py`): weights renormalise over the scorers present, and the result lists the scorers used and missing.
+- [ ] RAG scorer: have the advisor return a grounded 0–1 assessment (Phase 8)
+- [ ] Fit the fusion weights on observations with a photo, a reading and an outcome for the same plant and time. **This needs the photos for the dataset's 840 image files, which are missing.**
+- [ ] Compare photo-only, sensor-only and fused on those paired observations (the research question)
+- [ ] Replace the old single model (`ml/disease_risk`, synthetic demo) in the backend with the fusion
+
+**Done when:** fused vs single-scorer results exist on paired observations. This answers the research question.
 
 ## Phase 7 — RAG Knowledge Base 🟡
 

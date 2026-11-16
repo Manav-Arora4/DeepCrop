@@ -2,6 +2,8 @@
 
 > **Final Year AI/ML University Project**  
 > A modular, full-stack agricultural AI decision-support platform combining Computer Vision, IoT sensor monitoring, Multimodal Machine Learning, and LLM-powered Retrieval-Augmented Generation (RAG).
+>
+> Project overseen by Dr. Swarna Kolaventi.
 
 ---
 
